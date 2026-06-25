@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Preview — MenuForge</title>
+  <meta name="description" content="Preview your hotel menu before publishing.">
+
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/themes.css">
+  <link rel="stylesheet" href="css/themes-new.css">
+  <link rel="stylesheet" href="css/print.css">
+  
+  <!-- Google Fonts for 10 Stunning Premium Themes -->
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=Lato:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Sans+JP:wght@300;400;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Barlow:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Bebas+Neue&family=Caveat:wght@400;700&family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&family=Italiana&family=Jost:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&family=Oswald:wght@300;400;700&family=Shippori+Mincho+B1:wght@400;700&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Cinzel:wght@400;700&family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@300;400;700&family=Outfit:wght@300;400;700&family=Share+Tech+Mono&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Special+Elite&display=swap" rel="stylesheet">
+  
+  <!-- Google Fonts for 5 Classic Typographic Themes -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Great+Vibes&family=IM+Fell+English:ital@0;1&family=Josefin+Sans:wght@300;400;600;700&family=Noto+Serif+JP:wght@400;700&family=Petit+Formal+Script&family=Pinyon+Script&family=Poiret+One&family=Shippori+Mincho:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    .preview-layout {
+      min-height: 100vh;
+      background: var(--app-bg);
+      transition: background 0.3s ease;
+    }
+    
+    .preview-layout:has(.theme-luxe-noir) {
+      background: #0D0D0D !important;
+    }
+
+    .preview-layout:has(.theme-minimalist-tokyo) {
+      background: #F4F4F0 !important;
+    }
+
+    .preview-layout:has(.theme-mediterranean) {
+      background: #EFE4D6 !important;
+    }
+
+    .preview-layout:has(.theme-obsidian) {
+      background: #0A0A0B !important;
+    }
+
+    .preview-layout:has(.theme-sakura) {
+      background: #FAFAF8 !important;
+    }
+
+    .preview-layout:has(.theme-neon) {
+      background: #0E0B18 !important;
+    }
+
+    .preview-layout:has(.theme-verdant) {
+      background: #F3F0E8 !important;
+    }
+
+    .preview-layout:has(.theme-copper) {
+      background: #2E2C2A !important;
+    }
+
+    .preview-layout:has(.theme-riviera) {
+      background: #F8F4EE !important;
+    }
+
+    .preview-layout:has(.theme-blueprint) {
+      background: #0F2040 !important;
+    }
+
+    .preview-layout:has(.theme-saffron) {
+      background: #FAF3E8 !important;
+    }
+
+    .preview-layout:has(.theme-aurora) {
+      background: #0C0E1A !important;
+    }
+
+    .preview-layout:has(.theme-typewriter) {
+      background: #F5F0E6 !important;
+    }
+
+    .preview-layout:has(.theme-blossom) {
+      background: #FEF9F5 !important;
+    }
+
+    .preview-layout:has(.theme-noir) {
+      background: #111010 !important;
+    }
+
+    .preview-layout:has(.theme-paris) {
+      background: #F5EFE0 !important;
+    }
+
+    .preview-layout:has(.theme-ink) {
+      background: #F8F5EE !important;
+    }
+
+    .preview-layout:has(.theme-deco) {
+      background: #0E1A30 !important;
+    }
+
+    .preview-controls {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-4);
+      background: var(--glass-bg);
+      backdrop-filter: blur(var(--backdrop-blur));
+      -webkit-backdrop-filter: blur(var(--backdrop-blur));
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-full);
+      box-shadow: var(--shadow-lg);
+      z-index: var(--z-sticky);
+    }
+
+    .preview-controls .btn { font-size: var(--text-xs); }
+
+    .preview-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: var(--space-8) var(--space-4) 100px;
+    }
+
+    .preview-container .menu-page {
+      background: white;
+      box-shadow: var(--shadow-xl);
+      border-radius: var(--radius-xs);
+    }
+
+    /* Guest mode (no controls, full-width) */
+    .guest-mode .preview-controls { display: none; }
+    .preview-layout.guest-mode {
+      background: #080808 !important;
+    }
+    .guest-mode .preview-container {
+      padding: 0 !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      align-items: stretch !important;
+    }
+    .guest-mode .menu-page {
+      box-shadow: none;
+      border-radius: 0;
+      width: 100% !important;
+      max-width: 700px;
+      margin: 0 auto;
+      min-height: auto !important;
+    }
+
+    /* QR panel */
+    .qr-panel {
+      position: fixed;
+      right: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--panel-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-lg);
+      padding: var(--space-5);
+      width: 220px;
+      text-align: center;
+      z-index: var(--z-sticky);
+    }
+
+    .qr-panel__title {
+      font-size: var(--text-sm);
+      font-weight: var(--weight-semibold);
+      margin-bottom: var(--space-3);
+    }
+
+    .qr-panel__canvas-wrap {
+      background: white;
+      padding: var(--space-3);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-3);
+      display: inline-block;
+    }
+
+    .qr-panel__url {
+      font-size: var(--text-2xs);
+      color: var(--text-muted);
+      word-break: break-all;
+      margin-bottom: var(--space-3);
+      background: var(--app-bg-subtle);
+      padding: var(--space-2);
+      border-radius: var(--radius-sm);
+    }
+
+    @media (max-width: 1200px) {
+      .qr-panel { display: none; }
+    }
+
+    /* Loading */
+    .preview-loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 60vh;
+      color: var(--text-muted);
+      gap: var(--space-3);
+    }
+
+    .preview-loading__spinner {
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Device preview frame */
+    .device-frame {
+      display: none;
+    }
+    .device-frame--active {
+      display: block;
+    }
+    .device-frame--phone .menu-page {
+      width: 375px !important;
+      min-height: 667px !important;
+    }
+    .device-frame--tablet .menu-page {
+      width: 768px !important;
+      min-height: 1024px !important;
+    }
+
+    @media (max-width: 768px) {
+      .preview-container {
+        padding: var(--space-4) var(--space-2) 100px !important;
+      }
+      .menu-page {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
+        min-height: auto !important;
+        overflow: visible !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+      }
+      .device-frame--phone .menu-page,
+      .device-frame--tablet .menu-page {
+        width: 100% !important;
+        min-height: auto !important;
+      }
+      
+      .preview-controls {
+        width: calc(100% - 32px);
+        bottom: 16px;
+        border-radius: var(--radius-lg);
+        justify-content: space-between;
+        gap: var(--space-1);
+        padding: var(--space-2);
+      }
+      .preview-controls .btn-group,
+      .preview-controls .canvas-toolbar__separator,
+      .preview-controls #btn-export-csv,
+      .preview-controls #btn-export-png,
+      .preview-controls #btn-export-svg {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Splash Screen -->
+  <div id="app-splash-screen" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#121212;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.4s ease,visibility 0.4s ease;">
+    <div style="text-align:center; padding: 24px;">
+      <div id="app-splash-logo-container" style="margin-bottom:20px; display:flex; justify-content:center; align-items:center; min-height:80px;">
+        <svg width="64" height="64" viewBox="0 0 28 28" fill="none" style="animation:app-pulse 1.5s infinite ease-in-out;display:inline-block;">
+          <rect width="28" height="28" rx="7" fill="#C9A96E"/>
+          <path d="M7 9h14M7 14h14M7 19h10" stroke="white" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h2 id="app-splash-name" style="font-family:sans-serif;font-size:24px;font-weight:600;color:#fff;margin-bottom:16px;letter-spacing:0.05em;max-width:320px;margin-left:auto;margin-right:auto;word-wrap:break-word;">MenuForge</h2>
+      <div style="width:100px;height:2px;background:#333;margin:0 auto;position:relative;overflow:hidden;border-radius:1px;">
+        <div style="position:absolute;top:0;left:-50%;width:50%;height:100%;background:#C9A96E;animation:app-loading-slide 1.5s infinite linear;"></div>
+      </div>
+    </div>
+  </div>
+  <style>
+    @keyframes app-pulse {
+      0%, 100% { transform: scale(1); opacity: 0.9; }
+      50% { transform: scale(1.05); opacity: 1; }
+    }
+    @keyframes app-loading-slide {
+      0% { left: -50%; }
+      100% { left: 100%; }
+    }
+  </style>
+
+  <div class="preview-layout" id="preview-layout">
+
+    <!-- Preview Container -->
+    <div class="preview-container hidden" id="preview-container"></div>
+
+    <!-- QR Panel -->
+    <div class="qr-panel hidden no-print" id="qr-panel">
+      <div class="qr-panel__title">Share Menu</div>
+      <div class="qr-panel__canvas-wrap" id="qr-canvas-wrap"></div>
+      <div class="qr-panel__url" id="qr-url"></div>
+      <button class="btn btn--primary btn--sm btn--block" id="btn-download-qr">
+        Download QR
+      </button>
+      <button class="btn btn--ghost btn--sm btn--block" id="btn-copy-link" style="margin-top:6px;">
+        Copy Link
+      </button>
+    </div>
+
+    <!-- Bottom Controls -->
+    <div class="preview-controls no-print" id="preview-controls">
+      <a href="javascript:history.back()" class="btn btn--ghost btn--sm">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 3L5 7l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Back to Editor
+      </a>
+
+      <a href="#" class="btn btn--ghost btn--sm" id="btn-go-to-portal" style="display: none;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-right:4px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+        Hotel Portal
+      </a>
+
+      <div style="width:1px;height:20px;background:var(--border);margin:0 4px;"></div>
+
+      <div class="btn-group">
+        <button class="btn btn--ghost btn--sm" id="device-desktop" data-device="desktop" title="Desktop">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="2" width="12" height="8" rx="1" stroke="currentColor" stroke-width="1.3"/><path d="M4 12h6M7 10v2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        </button>
+        <button class="btn btn--ghost btn--sm" id="device-tablet" data-device="tablet" title="Tablet">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="2.5" y="1" width="9" height="12" rx="1.5" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="11" r="0.5" fill="currentColor"/></svg>
+        </button>
+        <button class="btn btn--ghost btn--sm" id="device-phone" data-device="phone" title="Phone">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="3.5" y="1" width="7" height="12" rx="1.5" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="11.5" r="0.5" fill="currentColor"/></svg>
+        </button>
+      </div>
+
+      <div style="width:1px;height:20px;background:var(--border);margin:0 4px;"></div>
+
+      <button class="btn btn--ghost btn--sm" id="btn-export-pdf" title="Print / Save as PDF">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 5V1h6v4M4 10H2.5A1.5 1.5 0 011 8.5v-3A1.5 1.5 0 012.5 4h9A1.5 1.5 0 0113 5.5v3A1.5 1.5 0 0111.5 10H10M4 8h6v5H4V8z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+        Print / PDF
+      </button>
+
+      <button class="btn btn--ghost btn--sm" id="btn-export-png" title="Export as PNG image">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="1.5" width="11" height="11" rx="1.5" stroke="currentColor" stroke-width="1.2"/><circle cx="5" cy="5" r="1.5" stroke="currentColor" stroke-width="1"/><path d="M1.5 10l3-3 2 2 2.5-3 3.5 4" stroke="currentColor" stroke-width="1"/></svg>
+        PNG
+      </button>
+
+      <button class="btn btn--ghost btn--sm" id="btn-export-svg" title="Export as SVG image">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-right:4px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        SVG
+      </button>
+
+      <button class="btn btn--ghost btn--sm" id="btn-export-csv" title="Export items as CSV">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 10v2a1 1 0 001 1h8a1 1 0 001-1v-2M7 1v8M4 6l3 3 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        CSV
+      </button>
+
+      <div style="width:1px;height:20px;background:var(--border);margin:0 4px;"></div>
+
+      <button class="btn btn--primary btn--sm" id="btn-publish">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v8M4 6l3 3 3-3M2 11v1a1 1 0 001 1h8a1 1 0 001-1v-1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Publish
+      </button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initApp, state, toast, confirm, navigateTo, setTheme } from './js/app.js';
+    import authManager from './js/auth.js';
+    import db from './js/db.js';
+    import { localStore, escapeHtml } from './js/utils/helpers.js';
+    import MenuRenderer from './js/preview/renderer.js';
+    import ExportManager from './js/preview/export.js';
+    import QRGenerator from './js/preview/qr.js';
+
+    // URL params
+    const params = new URLSearchParams(window.location.search);
+    const menuId = params.get('id');
+    const isGuest = params.get('guest') === 'true';
+    const mode = params.get('mode'); // 'print', 'png'
+    const autoPrint = params.get('auto') === 'true';
+    const hotelIdParam = params.get('hotelId');
+
+    if (!menuId && !hotelIdParam) {
+      navigateTo('dashboard.html');
+    }
+
+    if (isGuest) {
+      document.getElementById('preview-layout').classList.add('guest-mode');
+    }
+
+    const renderer = new MenuRenderer();
+    let menuData = null;
+    let originalHtml = '';
+
+    function paginateMenu(container) {
+      if (!container) return;
+      
+      const pages = Array.from(container.querySelectorAll('.menu-page'));
+      if (pages.length === 0) return;
+      
+      const isDigital = pages[0].classList.contains('menu-page--digital');
+      if (isDigital) return; // Digital layout is a continuous scroll, no pagination needed.
+      
+      let pageIndex = 0;
+      while (pageIndex < pages.length) {
+        const page = pages[pageIndex];
+        const maxHeight = page.offsetHeight || 1123; // fallback to A4 height in px
+        
+        const children = Array.from(page.children).filter(el => {
+          return !el.classList.contains('menu-footer') && !el.classList.contains('page-break');
+        });
+        
+        let splitIndex = -1;
+        let itemSplitSection = null;
+        let itemSplitIndex = -1;
+        
+        for (let i = 0; i < children.length; i++) {
+          const child = children[i];
+          const bottom = child.offsetTop + child.offsetHeight;
+          
+          if (bottom > maxHeight) {
+            if (i === 0) {
+              // The first section itself overflows. Let's try splitting its items.
+              const items = Array.from(child.querySelectorAll('.menu-item'));
+              for (let j = 0; j < items.length; j++) {
+                const item = items[j];
+                const itemBottom = child.offsetTop + item.offsetTop + item.offsetHeight;
+                if (itemBottom > maxHeight) {
+                  if (j > 0) {
+                    itemSplitSection = child;
+                    itemSplitIndex = j;
+                  }
+                  break;
+                }
+              }
+            }
+            splitIndex = i;
+            break;
+          }
+        }
+        
+        if (splitIndex !== -1) {
+          const newPage = page.cloneNode(false); // empty clone of page
+          const footer = page.querySelector('.menu-footer');
+          
+          if (itemSplitSection && itemSplitIndex > 0) {
+            // Split category items
+            const currentSection = itemSplitSection;
+            const newSection = currentSection.cloneNode(true);
+            
+            // Remove divider and title modifications on split page for clean flow
+            const newDivider = newSection.querySelector('.section-divider');
+            if (newDivider) newDivider.remove();
+            
+            const newTitle = newSection.querySelector('.section-title');
+            if (newTitle) {
+              newTitle.textContent = newTitle.textContent + ' (Cont.)';
+            }
+            
+            const newSubtitle = newSection.querySelector('.section-subtitle');
+            if (newSubtitle) newSubtitle.remove();
+            
+            // Keep items 0..j-1 on current section
+            const currentItems = Array.from(currentSection.querySelectorAll('.menu-item'));
+            const newItems = Array.from(newSection.querySelectorAll('.menu-item'));
+            
+            // Remove items from new section that remain on current page
+            for (let k = 0; k < itemSplitIndex; k++) {
+              newItems[k].remove();
+            }
+            // Remove items from current section that move to new page
+            for (let k = itemSplitIndex; k < currentItems.length; k++) {
+              currentItems[k].remove();
+            }
+            
+            newPage.appendChild(newSection);
+            
+            // Move all subsequent sections
+            const sectionsToMove = children.slice(1);
+            sectionsToMove.forEach(sec => newPage.appendChild(sec));
+          } else {
+            // Split at section boundary
+            const sectionsToMove = children.slice(splitIndex);
+            sectionsToMove.forEach(sec => newPage.appendChild(sec));
+          }
+          
+          if (footer) {
+            newPage.appendChild(footer);
+          }
+          
+          page.parentNode.insertBefore(newPage, page.nextSibling);
+          pages.splice(pageIndex + 1, 0, newPage);
+        }
+        
+        pageIndex++;
+      }
+    }
+
+    function updatePreviewLayout() {
+      const container = document.getElementById('preview-container');
+      if (!container || !originalHtml) return;
+      
+      // Save scroll position
+      const scrollPos = window.scrollY;
+      
+      // Restore original unpaginated HTML
+      container.innerHTML = originalHtml;
+      
+      // Defer measurements until DOM layout is updated and resolved
+      requestAnimationFrame(() => {
+        const isMobileScreen = window.innerWidth <= 768;
+        const isPhonePreview = container.classList.contains('device-frame--phone');
+        const isDigital = container.querySelector('.menu-page--digital');
+        
+        if (!isMobileScreen && !isPhonePreview && !isDigital) {
+          // Enforce pagination
+          paginateMenu(container);
+        }
+        
+        // Restore scroll position
+        window.scrollTo(0, scrollPos);
+      });
+    }
+
+    function updateSplashFromPortalData(portalData) {
+      if (!portalData) return;
+      const logoContainer = document.getElementById('app-splash-logo-container');
+      const nameEl = document.getElementById('app-splash-name');
+      
+      if (portalData.hotelLogo && logoContainer) {
+        logoContainer.innerHTML = `<img src="${portalData.hotelLogo}" alt="${portalData.hotelName || 'Hotel'} Logo" style="max-height:80px; max-width:200px; height:auto; width:auto; object-fit:contain; animation:app-pulse 1.5s infinite ease-in-out;">`;
+      } else if (logoContainer) {
+        logoContainer.innerHTML = `
+          <div style="width:70px; height:70px; border-radius:50%; border:1px solid rgba(201, 169, 110, 0.4); display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, rgba(201, 169, 110, 0.2) 0%, rgba(0, 0, 0, 0) 100%); animation:app-pulse 1.5s infinite ease-in-out;">
+            <span style="font-size:28px; color:#C9A96E;">⚜️</span>
+          </div>
+        `;
+      }
+      
+      if (portalData.hotelName && nameEl) {
+        nameEl.textContent = portalData.hotelName;
+      }
+    }
+
+    // Apply theme
+    const savedTheme = localStore('theme') || 'light';
+    setTheme(savedTheme);
+
+    async function loadMenu() {
+      try {
+        // For guest mode, try public path first
+        let data;
+        if (isGuest) {
+          data = await db.get(`publicMenus/${menuId}`);
+        }
+
+        if (!data && !isGuest) {
+          const hotelId = state.get('currentHotelId');
+          if (hotelId) {
+            data = await db.get(`hotels/${hotelId}/menus/${menuId}`);
+          }
+        }
+
+        if (!data) {
+          const container = document.getElementById('preview-container');
+          container.innerHTML = `
+            <div style="text-align:center;">
+              <h2 style="font-size:24px;margin-bottom:8px;">Menu Not Found</h2>
+              <p style="color:var(--text-muted);">This menu may have been deleted or is not published yet.</p>
+              ${!isGuest ? '<a href="dashboard.html" class="btn btn--primary" style="margin-top:16px;">Back to Dashboard</a>' : ''}
+            </div>
+          `;
+          container.classList.remove('hidden');
+          if (window.hideSplashScreen) window.hideSplashScreen();
+          return;
+        }
+
+        menuData = data;
+        
+        // Fetch hotel details to show in the splash screen
+        const hotelId = data.meta?.hotelId || (isGuest ? null : state.get('currentHotelId'));
+        if (hotelId) {
+          const portalPath = isGuest ? `publicMenus/hotel_${hotelId}` : `hotels/${hotelId}/info`;
+          db.get(portalPath).then(info => {
+            if (info) {
+              const mappedData = {
+                hotelName: info.hotelName || info.name || 'Our Property',
+                hotelLogo: info.hotelLogo || info.logo || null
+              };
+              updateSplashFromPortalData(mappedData);
+            }
+          }).catch(err => console.error('Failed to prefetch hotel portal info for splash:', err));
+
+          // Configure admin portal link button
+          if (!isGuest) {
+            const portalBtn = document.getElementById('btn-go-to-portal');
+            if (portalBtn) {
+              portalBtn.href = `preview.html?hotelId=${hotelId}&guest=true`;
+              portalBtn.style.display = 'inline-flex';
+            }
+          }
+        }
+
+        document.title = `${data.meta?.name || 'Menu'} — MenuForge`;
+
+        // Render
+        originalHtml = renderer.render(data);
+        const container = document.getElementById('preview-container');
+        container.classList.remove('hidden');
+        updatePreviewLayout();
+
+        // QR code
+        if (!isGuest) {
+          const qrPanel = document.getElementById('qr-panel');
+          qrPanel.classList.remove('hidden');
+
+          const shareUrl = QRGenerator.buildMenuUrl(menuId);
+          document.getElementById('qr-url').textContent = shareUrl;
+
+          await QRGenerator.renderTo(
+            document.getElementById('qr-canvas-wrap'),
+            shareUrl,
+            { size: 160, colorDark: '#1A1A1A' }
+          );
+        }
+
+        // Increment view count
+        if (data.meta) {
+          const hotelId = state.get('currentHotelId');
+          if (hotelId) {
+            db.update(`hotels/${hotelId}/menus/${menuId}/meta`, {
+              viewCount: (data.meta.viewCount || 0) + 1
+            }).catch(() => {});
+          }
+        }
+
+        // Auto-print if requested
+        if (autoPrint) {
+          setTimeout(() => window.print(), 500);
+        }
+
+        // Setup menu switcher if hotelId is available
+        if (data.meta?.hotelId) {
+          setupGuestSwitcher(data.meta.hotelId, menuId);
+        }
+
+        if (window.hideSplashScreen) window.hideSplashScreen();
+
+      } catch (error) {
+        console.error('Failed to load menu:', error);
+        const container = document.getElementById('preview-container');
+        container.innerHTML = `
+          <div style="text-align:center;">
+            <h2 style="font-size:24px;margin-bottom:8px; color: #FFF;">Error Loading Menu</h2>
+            <p style="color:var(--text-muted);">${error.message}</p>
+          </div>
+        `;
+        container.classList.remove('hidden');
+        if (window.hideSplashScreen) window.hideSplashScreen();
+      }
+    }
+
+    async function loadHotelPortal(hotelId) {
+      try {
+        const portalData = await db.get(`publicMenus/hotel_${hotelId}`);
+        if (portalData) {
+          updateSplashFromPortalData(portalData);
+        }
+        const container = document.getElementById('preview-container');
+        
+        if (!portalData || !portalData.menus || portalData.menus.length === 0) {
+          container.innerHTML = `
+            <div style="text-align:center; padding: 48px 24px;">
+              <h2 style="font-size:24px;margin-bottom:8px; color: #FFF;">No Active Menus</h2>
+              <p style="color:var(--text-muted);">This property has not published any menus yet.</p>
+            </div>
+          `;
+          container.classList.remove('hidden');
+          if (window.hideSplashScreen) window.hideSplashScreen();
+          return;
+        }
+
+        // Render the hotel portal
+        let logoHtml = '';
+        if (portalData.hotelLogo) {
+          logoHtml = `<img src="${portalData.hotelLogo}" alt="${portalData.hotelName} Logo" class="portal-luxury-logo">`;
+        } else {
+          logoHtml = `<span class="portal-luxury-logo-placeholder">⚜️</span>`;
+        }
+
+        const menuCards = portalData.menus.map(menu => {
+          const categoryLabels = {
+            breakfast: 'Breakfast Menu',
+            brunch: 'Brunch Special',
+            lunch: 'Lunch Selection',
+            dinner: 'Main Dinner Menu',
+            drinks: 'Wine & Cocktails',
+            cocktails: 'Cocktails & Spirits',
+            wine: 'Fine Wine List',
+            desserts: 'Desserts & Coffee',
+            kids: 'Kids Favorites',
+            roomService: 'Room Service',
+            allDay: 'All Day Dining'
+          };
+          const categoryIcons = {
+            breakfast: '🍳',
+            brunch: '🥞',
+            lunch: '🍔',
+            dinner: '🍽',
+            drinks: '🍹',
+            cocktails: '🍷',
+            wine: '🍾',
+            desserts: '🍰',
+            kids: '🎈',
+            roomService: '🛏',
+            allDay: '🕒'
+          };
+          const catLabel = categoryLabels[menu.category] || 'Menu';
+          const catIcon = categoryIcons[menu.category] || '✦';
+          
+          return `
+            <a href="preview.html?id=${menu.id}&hotelId=${hotelId}&guest=true" class="portal-luxury-card" style="text-decoration: none;">
+              <div class="portal-luxury-card__glare"></div>
+              <div class="portal-luxury-card__icon-wrap">
+                <span class="portal-luxury-card__icon">${catIcon}</span>
+              </div>
+              <div class="portal-luxury-card__content">
+                <span class="portal-luxury-card__category">${catLabel}</span>
+                <h3 class="portal-luxury-card__title">${escapeHtml(menu.name)}</h3>
+              </div>
+              <div class="portal-luxury-card__action">
+                <span class="portal-luxury-card__btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </span>
+              </div>
+            </a>
+          `;
+        }).join('');
+
+        container.innerHTML = `
+          <div class="portal-luxury-wrapper">
+            <div class="portal-luxury-container">
+              <header class="portal-luxury-header">
+                <div class="portal-luxury-logo-wrap ${portalData.hotelLogo ? 'has-logo' : 'has-placeholder'}">
+                  ${logoHtml}
+                </div>
+                <h1 class="portal-luxury-title">${escapeHtml(portalData.hotelName)}</h1>
+                ${portalData.hotelAddress ? `
+                  <div class="portal-luxury-address">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    <span>${escapeHtml(portalData.hotelAddress)}</span>
+                  </div>
+                ` : ''}
+                <div class="portal-luxury-divider">
+                  <span class="portal-luxury-divider-line"></span>
+                  <span class="portal-luxury-divider-diamond">✦</span>
+                  <span class="portal-luxury-divider-line"></span>
+                </div>
+                <p class="portal-luxury-subtitle">Experience our culinary creations</p>
+              </header>
+              
+              <main class="portal-luxury-grid">
+                ${menuCards}
+              </main>
+              
+              <footer class="portal-luxury-footer">
+                <p>Welcome • Please select a menu</p>
+                <div style="margin-top:20px; font-size:10px; opacity:0.6; letter-spacing:0.1em; text-transform:uppercase;">
+                  Powered by <span style="color:var(--accent); font-weight:600;">MenuForge</span>
+                </div>
+              </footer>
+            </div>
+          </div>
+        `;
+
+        container.classList.remove('hidden');
+        if (window.hideSplashScreen) window.hideSplashScreen();
+      } catch (error) {
+        console.error('Failed to load hotel portal:', error);
+        const container = document.getElementById('preview-container');
+        container.innerHTML = `
+          <div style="text-align:center; padding:48px 24px;">
+            <h2 style="font-size:24px;margin-bottom:8px; color: #FFF;">Error Loading Portal</h2>
+            <p style="color:var(--text-muted);">${error.message}</p>
+          </div>
+        `;
+        container.classList.remove('hidden');
+        if (window.hideSplashScreen) window.hideSplashScreen();
+      }
+    }
+
+    async function setupGuestSwitcher(hotelId, currentMenuId) {
+      if (!isGuest) return;
+      try {
+        const portalData = await db.get(`publicMenus/hotel_${hotelId}`);
+        if (!portalData) return;
+
+        // Render back button to hotel portal
+        const existingBack = document.querySelector('.guest-portal-back-btn');
+        if (existingBack) existingBack.remove();
+
+        const backBtn = document.createElement('a');
+        backBtn.href = `preview.html?hotelId=${hotelId}&guest=true`;
+        backBtn.className = 'guest-portal-back-btn';
+        backBtn.innerHTML = `
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-right:4px;"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          <span>All Menus</span>
+        `;
+        document.body.appendChild(backBtn);
+
+        // Render menu switcher only if there are multiple active menus
+        if (portalData.menus && portalData.menus.length > 1) {
+          const existing = document.querySelector('.guest-menu-switcher');
+          if (existing) existing.remove();
+
+          const switcher = document.createElement('div');
+          switcher.className = 'guest-menu-switcher';
+          
+          const currentMenu = portalData.menus.find(m => m.id === currentMenuId);
+          const currentName = currentMenu ? currentMenu.name : 'Menus';
+
+          const dropdownItemsHtml = portalData.menus.map(menu => {
+            const isActive = menu.id === currentMenuId;
+            return `
+              <a href="preview.html?id=${menu.id}&guest=true" class="guest-switcher-item ${isActive ? 'guest-switcher-item--active' : ''}">
+                <span>${escapeHtml(menu.name)}</span>
+              </a>
+            `;
+          }).join('');
+
+          switcher.innerHTML = `
+            <button class="guest-switcher-btn" id="guest-menu-select-btn">
+              <span>${escapeHtml(currentName)}</span>
+              <svg width="12" height="12" viewBox="0 0 20 20" fill="none" style="margin-left: 4px;"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="guest-switcher-dropdown" id="guest-menu-dropdown-menu">
+              ${dropdownItemsHtml}
+              <div style="height:1px; background: rgba(255,255,255,0.1); margin: 4px 0;"></div>
+              <a href="preview.html?hotelId=${hotelId}&guest=true" class="guest-switcher-item" style="color: var(--accent); font-weight: 500;">
+                <span>🏠 All Menus</span>
+              </a>
+            </div>
+          `;
+
+          document.body.appendChild(switcher);
+
+          const btn = switcher.querySelector('#guest-menu-select-btn');
+          const dropdown = switcher.querySelector('#guest-menu-dropdown-menu');
+
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdown.classList.toggle('guest-switcher-dropdown--visible');
+          });
+
+          document.addEventListener('click', () => {
+            dropdown.classList.remove('guest-switcher-dropdown--visible');
+          });
+        }
+      } catch (err) {
+        console.error('Failed to setup menu switcher:', err);
+      }
+    }
+
+    // Init
+    if (menuId) {
+      if (isGuest) {
+        loadMenu();
+      } else {
+        await initApp({
+          requiresAuth: true,
+          onReady: () => loadMenu()
+        });
+      }
+    } else if (hotelIdParam) {
+      // Pre-load splash brand if hotelId is in URL
+      db.get(`publicMenus/hotel_${hotelIdParam}`).then(portalData => {
+        if (portalData) updateSplashFromPortalData(portalData);
+      }).catch(err => console.error('Failed to pre-load splash brand:', err));
+
+      loadHotelPortal(hotelIdParam);
+    } else {
+      navigateTo('dashboard.html');
+    }
+
+    // ── Controls ──
+    document.getElementById('btn-export-pdf')?.addEventListener('click', () => {
+      ExportManager.printPDF();
+    });
+
+    document.getElementById('btn-export-png')?.addEventListener('click', () => {
+      const container = document.getElementById('preview-container');
+      if (container) {
+        const cleanName = (menuData?.meta?.name || 'menu').replace(/\s+/g, '_');
+        ExportManager.exportPNG(container, cleanName);
+      }
+    });
+
+    document.getElementById('btn-export-svg')?.addEventListener('click', () => {
+      const container = document.getElementById('preview-container');
+      if (container) {
+        const cleanName = (menuData?.meta?.name || 'menu').replace(/\s+/g, '_');
+        ExportManager.exportSVG(container, cleanName);
+      }
+    });
+
+    document.getElementById('btn-export-csv')?.addEventListener('click', () => {
+      if (menuData) {
+        ExportManager.exportCSV(menuData, `${menuData.meta?.name || 'menu'}-items.csv`);
+      }
+    });
+
+    document.getElementById('btn-publish')?.addEventListener('click', async () => {
+      const { showShareModal } = await import('./js/app.js');
+      await showShareModal(menuId);
+    });
+
+    // QR downloads
+    document.getElementById('btn-download-qr')?.addEventListener('click', () => {
+      const url = QRGenerator.buildMenuUrl(menuId);
+      QRGenerator.download(url, `${menuData?.meta?.name || 'menu'}-qr.png`);
+    });
+
+    document.getElementById('btn-copy-link')?.addEventListener('click', async () => {
+      const url = QRGenerator.buildMenuUrl(menuId);
+      try {
+        await navigator.clipboard.writeText(url);
+        toast.success('Link copied to clipboard');
+      } catch {
+        toast.error('Failed to copy link');
+      }
+    });
+
+    // Device preview
+    document.querySelectorAll('[data-device]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const device = btn.dataset.device;
+        const container = document.getElementById('preview-container');
+
+        container.classList.remove('device-frame--active', 'device-frame--phone', 'device-frame--tablet');
+
+        document.querySelectorAll('[data-device]').forEach(b => b.classList.remove('btn--active'));
+        btn.classList.add('btn--active');
+
+        if (device !== 'desktop') {
+          container.classList.add('device-frame', 'device-frame--active', `device-frame--${device}`);
+        }
+        
+        // Recalculate layout/pagination for the new device size
+        updatePreviewLayout();
+      });
+    });
+
+    // Handle window resizing and document load events for pagination stability
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(updatePreviewLayout, 200);
+    });
+
+    window.addEventListener('load', updatePreviewLayout);
+  </script>
+</body>
+</html>

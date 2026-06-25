@@ -1,0 +1,236 @@
+/* ============================================
+   MenuForge — Print Stylesheet
+   Optimized for A4/Letter PDF output
+   ============================================ */
+
+@media print {
+  /* Hide all editor chrome */
+  .top-nav,
+  .editor-topbar,
+  .editor-left,
+  .editor-right,
+  .canvas-toolbar,
+  .canvas-grid,
+  .canvas-safe-area,
+  .section-actions,
+  .canvas-drop-zone,
+  .toast-container,
+  .modal-overlay,
+  .shortcuts-overlay,
+  .skip-nav,
+  .preview-controls,
+  .no-print,
+  #theme-toggle,
+  #user-menu {
+    display: none !important;
+  }
+
+  /* Reset page */
+  html, body {
+    height: auto !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Page settings */
+  @page {
+    margin: 0;
+  }
+
+  @page portrait-layout {
+    size: A4 portrait;
+    margin: 0;
+  }
+
+  @page landscape-layout {
+    size: A4 landscape;
+    margin: 0;
+  }
+
+  @page a5-layout {
+    size: A5 portrait;
+    margin: 0;
+  }
+
+  @page letter-layout {
+    size: letter portrait;
+    margin: 0;
+  }
+
+  .menu-page--a4 {
+    page: portrait-layout;
+  }
+
+  .menu-page--a4-landscape {
+    page: landscape-layout;
+  }
+
+  .menu-page--a5 {
+    page: a5-layout;
+  }
+
+  .menu-page--letter {
+    page: letter-layout;
+  }
+
+  /* Page breaks for printed sheets */
+  .menu-page {
+    break-after: page;
+    page-break-after: always;
+  }
+  
+  .menu-page:last-child {
+    break-after: auto;
+    page-break-after: auto;
+  }
+
+  /* Canvas page reset */
+  .canvas-page,
+  .menu-page {
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    transform: none !important;
+    margin: 0 auto !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .menu-page--a4 {
+    width: 210mm !important;
+    height: 297mm !important;
+  }
+  .menu-page--a4-landscape {
+    width: 297mm !important;
+    height: 210mm !important;
+  }
+  .menu-page--a5 {
+    width: 148mm !important;
+    height: 210mm !important;
+  }
+  .menu-page--letter {
+    width: 8.5in !important;
+    height: 11in !important;
+  }
+
+  .editor-canvas {
+    padding: 0 !important;
+    overflow: visible !important;
+    background: none !important;
+  }
+
+  .editor-layout {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .editor-body {
+    display: block !important;
+    overflow: visible !important;
+  }
+
+  /* Section breaks */
+  .canvas-section,
+  .menu-section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .page-break {
+    break-after: page;
+    page-break-after: always;
+  }
+
+  /* Orphan/widow control */
+  .menu-item {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    orphans: 3;
+    widows: 3;
+  }
+
+  .section-title,
+  .menu-header__title {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  /* Force black text for readability */
+  .menu-item .item-name,
+  .menu-item .item-description,
+  .menu-item .item-price,
+  .section-title {
+    color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  /* Ensure images print */
+  img {
+    max-width: 100% !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Remove hover effects */
+  .menu-item:hover,
+  .canvas-section:hover {
+    background: none !important;
+    border-color: transparent !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Remove selection styling */
+  .canvas-section--selected {
+    border-color: transparent !important;
+  }
+
+  /* Links */
+  a {
+    text-decoration: none !important;
+    color: inherit !important;
+  }
+
+  /* Print high-res images */
+  img[data-print-src] {
+    content: attr(data-print-src);
+  }
+
+  /* Explicitly enforce grid layout for classic typographic themes in print */
+  .theme-blossom.menu-preview,
+  .theme-noir.menu-preview,
+  .theme-paris.menu-preview,
+  .theme-ink.menu-preview,
+  .theme-deco.menu-preview {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 36px 48px !important;
+  }
+
+  /* Footer */
+  .menu-footer {
+    break-before: avoid;
+    page-break-before: avoid;
+  }
+}
+
+/* Print preview mode (in-app simulation) */
+.print-preview {
+  background: #DEDEDE;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.print-preview .menu-page {
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}

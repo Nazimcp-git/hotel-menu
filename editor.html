@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editor — MenuForge</title>
+  <meta name="description" content="Build and customize your hotel menu with the MenuForge drag-and-drop editor.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap"
+    rel="stylesheet">
+  <style>
+    body {
+      font-family: "Google Sans", sans-serif;
+    }
+  </style>
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/editor.css">
+  <link rel="stylesheet" href="css/themes.css">
+  <link rel="stylesheet" href="css/themes-new.css">
+  <link rel="stylesheet" href="css/print.css">
+  
+  <!-- Google Fonts for 10 Stunning Premium Themes -->
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=Lato:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Sans+JP:wght@300;400;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Barlow:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Bebas+Neue&family=Caveat:wght@400;700&family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&family=Italiana&family=Jost:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&family=Oswald:wght@300;400;700&family=Shippori+Mincho+B1:wght@400;700&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Cinzel:wght@400;700&family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@300;400;700&family=Outfit:wght@300;400;700&family=Share+Tech+Mono&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Special+Elite&display=swap" rel="stylesheet">
+
+  <!-- Google Fonts for 5 Classic Typographic Themes -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Great+Vibes&family=IM+Fell+English:ital@0;1&family=Josefin+Sans:wght@300;400;600;700&family=Noto+Serif+JP:wght@400;700&family=Petit+Formal+Script&family=Pinyon+Script&family=Poiret+One&family=Shippori+Mincho:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <!-- Splash Screen -->
+  <div id="app-splash-screen"
+    style="position:fixed;top:0;left:0;width:100%;height:100%;background:#121212;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.4s ease,visibility 0.4s ease;">
+    <div style="text-align:center;">
+      <svg width="64" height="64" viewBox="0 0 28 28" fill="none"
+        style="margin-bottom:20px;animation:app-pulse 1.5s infinite ease-in-out;display:inline-block;">
+        <rect width="28" height="28" rx="7" fill="#C9A96E" />
+        <path d="M7 9h14M7 14h14M7 19h10" stroke="white" stroke-width="2" stroke-linecap="round" />
+      </svg>
+      <h2
+        style="font-family:sans-serif;font-size:24px;font-weight:600;color:#fff;margin-bottom:8px;letter-spacing:0.05em;">
+        MenuForge</h2>
+      <div
+        style="width:100px;height:2px;background:#333;margin:0 auto;position:relative;overflow:hidden;border-radius:1px;">
+        <div
+          style="position:absolute;top:0;left:-50%;width:50%;height:100%;background:#C9A96E;animation:app-loading-slide 1.5s infinite linear;">
+        </div>
+      </div>
+    </div>
+  </div>
+  <style>
+    @keyframes app-pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 0.9;
+      }
+
+      50% {
+        transform: scale(1.05);
+        opacity: 1;
+      }
+    }
+
+    @keyframes app-loading-slide {
+      0% {
+        left: -50%;
+      }
+
+      100% {
+        left: 100%;
+      }
+    }
+  </style>
+
+  <a href="#canvas" class="skip-nav">Skip to canvas</a>
+
+  <div class="editor-layout">
+    <!-- ── TOP BAR ── -->
+    <div class="editor-topbar">
+      <div class="editor-topbar__left">
+        <a href="dashboard.html" class="nav-back-btn" aria-label="Back to dashboard" data-tooltip="Dashboard">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M12 4l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+        </a>
+        <a href="dashboard.html" class="nav-logo" aria-label="MenuForge Home">
+          <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
+            <rect width="28" height="28" rx="7" fill="var(--accent)" />
+            <path d="M7 9h14M7 14h14M7 19h10" stroke="white" stroke-width="2" stroke-linecap="round" />
+          </svg>
+        </a>
+      </div>
+
+      <div class="editor-topbar__center">
+        <input type="text" class="editor-menu-name" id="menu-name-input" value="Untitled Menu" aria-label="Menu name"
+          spellcheck="false">
+        <div class="save-status" id="save-status">
+          <span class="save-status__dot"></span>
+          <span id="save-status-text">Ready</span>
+        </div>
+      </div>
+
+      <div class="editor-topbar__right">
+        <div class="collaborators" id="collaborators"></div>
+
+        <button class="btn btn--icon" id="btn-undo" disabled aria-label="Undo" data-tooltip="Undo (Ctrl+Z)">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M3 6h7a3 3 0 010 6H8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+              stroke-linejoin="round" />
+            <path d="M6 3L3 6l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+        </button>
+        <button class="btn btn--icon" id="btn-redo" disabled aria-label="Redo" data-tooltip="Redo (Ctrl+Shift+Z)">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M13 6H6a3 3 0 000 6h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+              stroke-linejoin="round" />
+            <path d="M10 3l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+        </button>
+
+        <div class="canvas-toolbar__separator" style="height:24px;width:1px;background:var(--border);margin:0 4px;">
+        </div>
+
+        <button class="btn btn--ghost btn--sm" id="btn-preview" data-tooltip="Preview (Ctrl+P)">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M1 7s2.5-5 6-5 6 5 6 5-2.5 5-6 5-6-5-6-5z" stroke="currentColor" stroke-width="1.3" />
+            <circle cx="7" cy="7" r="2" stroke="currentColor" stroke-width="1.3" />
+          </svg>
+          Preview
+        </button>
+
+        <button class="btn btn--primary btn--sm" id="btn-save" data-tooltip="Save (Ctrl+S)">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M11 13H3a1 1 0 01-1-1V2a1 1 0 011-1h6l3 3v8a1 1 0 01-1 1z" stroke="currentColor" stroke-width="1.3"
+              stroke-linejoin="round" />
+            <path d="M9 1v3H6M5 8h4M5 10.5h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
+          </svg>
+          Save
+        </button>
+
+        <div class="dropdown" id="more-dropdown">
+          <button class="btn btn--icon" id="btn-more" aria-label="More actions" data-tooltip="More actions">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <circle cx="8" cy="3" r="1.2" fill="currentColor" />
+              <circle cx="8" cy="8" r="1.2" fill="currentColor" />
+              <circle cx="8" cy="13" r="1.2" fill="currentColor" />
+            </svg>
+          </button>
+          <div class="dropdown-menu" id="more-menu" role="menu">
+            <button class="dropdown-item" data-action="publish" role="menuitem">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M7 1v8M4 6l3 3 3-3M2 11v1a1 1 0 001 1h8a1 1 0 001-1v-1" stroke="currentColor"
+                  stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              Publish Menu
+            </button>
+            <button class="dropdown-item" data-action="duplicate" role="menuitem">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <rect x="4" y="4" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.2" />
+                <path d="M10 4V2.5A1.5 1.5 0 008.5 1h-6A1.5 1.5 0 001 2.5v6A1.5 1.5 0 002.5 10H4" stroke="currentColor"
+                  stroke-width="1.2" />
+              </svg>
+              Duplicate
+            </button>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item" data-action="export-pdf" role="menuitem">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M2 10v2a1 1 0 001 1h8a1 1 0 001-1v-2M7 1v8M4 6l3 3 3-3" stroke="currentColor"
+                  stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              Export PDF
+            </button>
+            <button class="dropdown-item" data-action="export-png" role="menuitem">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <rect x="1.5" y="1.5" width="11" height="11" rx="1.5" stroke="currentColor" stroke-width="1.2" />
+                <circle cx="5" cy="5" r="1.5" stroke="currentColor" stroke-width="1" />
+                <path d="M1.5 10l3-3 2 2 2.5-3 3.5 4" stroke="currentColor" stroke-width="1" />
+              </svg>
+              Export PNG
+            </button>
+            <button class="dropdown-item" data-action="export-json" role="menuitem">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M4 1H3a2 2 0 00-2 2v1M10 1h1a2 2 0 012 2v1M4 13H3a2 2 0 01-2-2v-1M10 13h1a2 2 0 002-2v-1"
+                  stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+                <path d="M5 5.5h4M5 8.5h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+              </svg>
+              Export JSON
+            </button>
+            <button class="dropdown-item" data-action="share" role="menuitem">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <circle cx="10.5" cy="2.5" r="1.8" stroke="currentColor" stroke-width="1.2" />
+                <circle cx="3.5" cy="7" r="1.8" stroke="currentColor" stroke-width="1.2" />
+                <circle cx="10.5" cy="11.5" r="1.8" stroke="currentColor" stroke-width="1.2" />
+                <path d="M5.1 6l3.8-2.5M5.1 8l3.8 2.5" stroke="currentColor" stroke-width="1.2" />
+              </svg>
+              Share Link
+            </button>
+            <button class="dropdown-item" data-action="print" role="menuitem">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path
+                  d="M4 5V1h6v4M4 10H2.5A1.5 1.5 0 011 8.5v-3A1.5 1.5 0 012.5 4h9A1.5 1.5 0 0113 5.5v3A1.5 1.5 0 0111.5 10H10M4 8h6v5H4V8z"
+                  stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" />
+              </svg>
+              Print
+            </button>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item dropdown-item--danger" data-action="delete" role="menuitem">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path
+                  d="M2 4h10M5 4V2.5a.5.5 0 01.5-.5h3a.5.5 0 01.5.5V4M11 4v7.5a1.5 1.5 0 01-1.5 1.5h-5A1.5 1.5 0 013 11.5V4"
+                  stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+              </svg>
+              Delete Menu
+            </button>
+          </div>
+        </div>
+
+        <div class="canvas-toolbar__separator" style="height:24px;width:1px;background:var(--border);margin:0 4px;">
+        </div>
+
+        <button class="nav-icon-btn" id="theme-toggle" aria-label="Toggle dark mode" data-tooltip="Dark Mode">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" class="icon-sun">
+            <circle cx="10" cy="10" r="4" stroke="currentColor" stroke-width="2" />
+            <path
+              d="M10 2v2M10 16v2M2 10h2M16 10h2M4.93 4.93l1.41 1.41M13.66 13.66l1.41 1.41M4.93 15.07l1.41-1.41M13.66 6.34l1.41-1.41"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" class="icon-moon">
+            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ── THREE-PANEL BODY ── -->
+    <div class="editor-body">
+      <!-- LEFT PANEL -->
+      <aside class="editor-left" id="left-panel">
+        <div class="editor-left__tabs" role="tablist">
+          <button class="editor-left__tab editor-left__tab--active" data-tab="sections" role="tab" aria-selected="true">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M2 4h12M2 8h12M2 12h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+            </svg>
+            Sections
+          </button>
+          <button class="editor-left__tab" data-tab="elements" role="tab" aria-selected="false">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <rect x="2" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.5" />
+              <rect x="9" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.5" />
+              <rect x="2" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.5" />
+              <rect x="9" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.5" />
+            </svg>
+            Elements
+          </button>
+          <button class="editor-left__tab" data-tab="media" role="tab" aria-selected="false">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <rect x="1.5" y="2.5" width="13" height="11" rx="1.5" stroke="currentColor" stroke-width="1.5" />
+              <circle cx="5.5" cy="6" r="1.5" stroke="currentColor" stroke-width="1.2" />
+              <path d="M1.5 11l3.5-3.5 2 2 3-3.5 4.5 5" stroke="currentColor" stroke-width="1.2" />
+            </svg>
+            Media
+          </button>
+          <button class="editor-left__tab" data-tab="design" role="tab" aria-selected="false">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.5" />
+              <path d="M8 2v2M8 12v2M2 8h2M12 8h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+            </svg>
+            Design
+          </button>
+        </div>
+
+        <div class="editor-left__content">
+          <!-- Sections Tab (default) -->
+          <div class="tab-panel tab-panel--active" id="left-tab-sections">
+            <div class="section-palette" id="section-palette">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <!-- Elements Tab -->
+          <div class="tab-panel" id="left-tab-elements">
+            <div class="section-palette">
+              <div class="section-palette__item" data-element="image" draggable="true">
+                <div class="section-palette__item-icon">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <rect x="1.5" y="2.5" width="13" height="11" rx="1.5" stroke="currentColor" stroke-width="1.5" />
+                    <circle cx="5.5" cy="6" r="1.5" stroke="currentColor" stroke-width="1" />
+                    <path d="M1.5 11l3.5-3.5 2 2 3-3.5 4.5 5" stroke="currentColor" stroke-width="1" />
+                  </svg>
+                </div>
+                <div class="section-palette__item-info">
+                  <div class="section-palette__item-name">Image</div>
+                  <div class="section-palette__item-desc">Upload via ImageKit</div>
+                </div>
+              </div>
+              <div class="section-palette__item" data-element="badge" draggable="true">
+                <div class="section-palette__item-icon">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M8 1l1.5 4.6H14l-3.7 2.7 1.4 4.3L8 9.8l-3.7 2.8 1.4-4.3L2 5.6h4.5L8 1z"
+                      stroke="currentColor" stroke-width="1.2" />
+                  </svg>
+                </div>
+                <div class="section-palette__item-info">
+                  <div class="section-palette__item-name">Badge / Tag</div>
+                  <div class="section-palette__item-desc">New, Chef's Pick, Seasonal</div>
+                </div>
+              </div>
+              <div class="section-palette__item" data-element="allergens" draggable="true">
+                <div class="section-palette__item-icon">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5" />
+                    <path d="M8 5v3M8 10h.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                  </svg>
+                </div>
+                <div class="section-palette__item-info">
+                  <div class="section-palette__item-name">Allergen Icons</div>
+                  <div class="section-palette__item-desc">14 EU allergen indicators</div>
+                </div>
+              </div>
+              <div class="section-palette__item" data-element="divider" draggable="true">
+                <div class="section-palette__item-icon">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M2 8h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                      stroke-dasharray="3 3" />
+                  </svg>
+                </div>
+                <div class="section-palette__item-info">
+                  <div class="section-palette__item-name">Decorative Divider</div>
+                  <div class="section-palette__item-desc">12 divider styles</div>
+                </div>
+              </div>
+              <div class="section-palette__item" data-element="spice" draggable="true">
+                <div class="section-palette__item-icon">🌶</div>
+                <div class="section-palette__item-info">
+                  <div class="section-palette__item-name">Spice Level</div>
+                  <div class="section-palette__item-desc">1–5 pepper icons</div>
+                </div>
+              </div>
+              <div class="section-palette__item" data-element="qr" draggable="true">
+                <div class="section-palette__item-icon">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <rect x="1" y="1" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.2" />
+                    <rect x="9" y="1" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.2" />
+                    <rect x="1" y="9" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.2" />
+                    <rect x="10" y="10" width="4" height="4" stroke="currentColor" stroke-width="1" />
+                  </svg>
+                </div>
+                <div class="section-palette__item-info">
+                  <div class="section-palette__item-name">QR Code</div>
+                  <div class="section-palette__item-desc">Embed QR code in menu</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Media Tab -->
+          <div class="tab-panel" id="left-tab-media">
+            <div
+              style="border:2px dashed var(--border);border-radius:var(--radius-lg);padding:32px 16px;text-align:center;margin-bottom:16px;cursor:pointer;"
+              id="media-upload-zone">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none"
+                style="margin:0 auto;color:var(--text-muted);">
+                <path d="M16 22V10M12 14l4-4 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" />
+                <path d="M6 22v2a2 2 0 002 2h16a2 2 0 002-2v-2" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" />
+              </svg>
+              <p style="font-size:13px;color:var(--text-muted);margin-top:8px;">Drag & drop or click to upload</p>
+              <p style="font-size:11px;color:var(--text-disabled);margin-top:4px;">JPG, PNG, WebP · Max 10MB</p>
+              <input type="file" id="media-file-input" accept="image/*" multiple hidden>
+            </div>
+            <div id="media-gallery" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+              <!-- Media thumbnails populated by JS -->
+            </div>
+          </div>
+
+          <!-- Design Tab -->
+          <div class="tab-panel" id="left-tab-design">
+            <div id="design-panel">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- CANVAS -->
+      <main class="editor-canvas" id="canvas" role="main" aria-label="Menu canvas">
+        <!-- Populated by canvas.js -->
+      </main>
+
+      <!-- RIGHT PANEL -->
+      <aside class="editor-right" id="right-panel">
+        <div id="right-panel-content">
+          <div class="editor-right__header">
+            <h3 class="editor-right__title">Menu Settings</h3>
+          </div>
+          <div class="editor-right__content" id="right-content">
+            <!-- Context-sensitive content populated by JS -->
+            <div class="prop-section">
+              <div class="prop-section__title">Menu Info</div>
+              <div class="prop-row">
+                <label class="prop-label">Name</label>
+                <input type="text" class="input" id="menu-settings-name" placeholder="Menu name">
+              </div>
+              <div class="prop-row">
+                <label class="prop-label">Description</label>
+                <textarea class="input" id="menu-settings-desc" rows="2" placeholder="Menu description"></textarea>
+              </div>
+              <div class="prop-row">
+                <label class="prop-label">Language</label>
+                <select class="input" id="menu-settings-language">
+                  <option value="en">🇬🇧 English</option>
+                  <option value="ar">🇸🇦 Arabic</option>
+                  <option value="fr">🇫🇷 French</option>
+                  <option value="es">🇪🇸 Spanish</option>
+                  <option value="de">🇩🇪 German</option>
+                  <option value="zh">🇹🇼 Chinese</option>
+                </select>
+              </div>
+              <div class="prop-row">
+                <label class="prop-label">Currency</label>
+                <select class="input" id="menu-settings-currency">
+                  <option value="USD">USD ($)</option>
+                  <option value="EUR">EUR (€)</option>
+                  <option value="GBP">GBP (£)</option>
+                  <option value="AED">AED (د.إ)</option>
+                  <option value="INR">INR (₹)</option>
+                  <option value="JPY">JPY (¥)</option>
+                </select>
+              </div>
+            </div>
+            <div class="prop-section">
+              <div class="prop-section__title">Display Options</div>
+              <div class="prop-row prop-row--inline">
+                <span class="prop-label">Show Prices</span>
+                <label class="toggle"><input type="checkbox" class="toggle__input" id="show-prices" checked><span
+                    class="toggle__slider"></span></label>
+              </div>
+              <div class="prop-row prop-row--inline">
+                <span class="prop-label">Show Calories</span>
+                <label class="toggle"><input type="checkbox" class="toggle__input" id="show-calories"><span
+                    class="toggle__slider"></span></label>
+              </div>
+              <div class="prop-row prop-row--inline">
+                <span class="prop-label">Show Allergens</span>
+                <label class="toggle"><input type="checkbox" class="toggle__input" id="show-allergens" checked><span
+                    class="toggle__slider"></span></label>
+              </div>
+              <div class="prop-row prop-row--inline">
+                <span class="prop-label">Show Item Numbers</span>
+                <label class="toggle"><input type="checkbox" class="toggle__input" id="show-numbers"><span
+                    class="toggle__slider"></span></label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initApp, state, toast, confirm, navigateTo, setTheme, toggleTheme } from './js/app.js';
+    import authManager from './js/auth.js';
+    import db from './js/db.js';
+    import { debounce, localStore } from './js/utils/helpers.js';
+    import CanvasEngine from './js/editor/canvas.js';
+    import SectionsManager from './js/editor/sections.js';
+    import ItemsManager from './js/editor/items.js';
+    import DesignManager from './js/editor/design.js';
+    import HistoryManager from './js/editor/history.js';
+    import ShortcutManager from './js/editor/shortcuts.js';
+
+    // Get menu ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const menuId = urlParams.get('id');
+
+    if (!menuId) {
+      navigateTo('dashboard.html');
+    }
+
+    // Editor state — the single source of truth
+    const editorState = {
+      menuId,
+      sections: {},
+      design: {},
+      meta: {},
+      primaryLanguage: 'en',
+      currency: 'USD',
+      pageSize: 'A4'
+    };
+
+    // Managers
+    const history = new HistoryManager();
+    const shortcuts = new ShortcutManager();
+    const sections = new SectionsManager(editorState);
+    const items = new ItemsManager(editorState);
+    const design = new DesignManager(editorState);
+    let canvas;
+
+    // Auto-save
+    let saveTimer = null;
+    const saveStatus = document.getElementById('save-status');
+    const saveStatusText = document.getElementById('save-status-text');
+
+    function markUnsaved() {
+      saveStatus.className = 'save-status';
+      saveStatusText.textContent = 'Unsaved changes...';
+    }
+
+    function markSaving() {
+      saveStatus.className = 'save-status save-status--saving';
+      saveStatusText.textContent = 'Saving...';
+    }
+
+    function markSaved() {
+      saveStatus.className = 'save-status save-status--saved';
+      saveStatusText.textContent = 'Saved';
+    }
+
+    function markError() {
+      saveStatus.className = 'save-status save-status--error';
+      saveStatusText.textContent = '⚠ Save failed';
+    }
+
+    // Initialize app
+    await initApp({
+      requiresAuth: true,
+      onReady: async (user) => {
+        const hotelId = state.get('currentHotelId');
+        if (!hotelId) {
+          navigateTo('dashboard.html');
+          return;
+        }
+
+        // Load menu data
+        const menuPath = `hotels/${hotelId}/menus/${menuId}`;
+
+        // Listen for real-time updates
+        db.listen(menuPath, (data) => {
+          if (!data) {
+            toast.error('Menu not found');
+            navigateTo('dashboard.html');
+            return;
+          }
+
+          editorState.sections = data.sections || {};
+          editorState.design = data.design || {};
+          editorState.meta = data.meta || {};
+          editorState.primaryLanguage = data.meta?.primaryLanguage || 'en';
+          editorState.currency = data.meta?.currency || 'USD';
+          editorState.pageSize = data.meta?.pageSize || 'A4';
+
+          // Update UI
+          document.getElementById('menu-name-input').value = data.meta?.name || 'Untitled Menu';
+          document.title = `${data.meta?.name || 'Untitled'} — MenuForge Editor`;
+
+          // Update right panel settings
+          const nameInput = document.getElementById('menu-settings-name');
+          if (nameInput && nameInput !== document.activeElement) nameInput.value = data.meta?.name || '';
+
+          const descInput = document.getElementById('menu-settings-desc');
+          if (descInput && descInput !== document.activeElement) descInput.value = data.meta?.description || '';
+
+          const langSelect = document.getElementById('menu-settings-language');
+          if (langSelect && langSelect !== document.activeElement) langSelect.value = data.meta?.primaryLanguage || 'en';
+
+          const currencySelect = document.getElementById('menu-settings-currency');
+          if (currencySelect && currencySelect !== document.activeElement) currencySelect.value = data.meta?.currency || 'USD';
+
+          const showPricesCheckbox = document.getElementById('show-prices');
+          if (showPricesCheckbox) showPricesCheckbox.checked = data.design?.showPrices !== false;
+
+          const showCaloriesCheckbox = document.getElementById('show-calories');
+          if (showCaloriesCheckbox) showCaloriesCheckbox.checked = !!data.design?.showCalories;
+
+          const showAllergensCheckbox = document.getElementById('show-allergens');
+          if (showAllergensCheckbox) showAllergensCheckbox.checked = data.design?.showAllergens !== false;
+
+          const showNumbersCheckbox = document.getElementById('show-numbers');
+          if (showNumbersCheckbox) showNumbersCheckbox.checked = !!data.design?.showItemNumbers;
+
+          // If a section is selected, update its inputs in the properties panel if they are not active
+          if (canvas && canvas.selectedSectionId) {
+            const section = data.sections?.[canvas.selectedSectionId];
+            if (section) {
+              const lang = data.meta?.primaryLanguage || 'en';
+              const titleInput = document.getElementById('section-title');
+              if (titleInput && titleInput !== document.activeElement) {
+                titleInput.value = section.header?.title?.[lang] || '';
+              }
+              const subtitleInput = document.getElementById('section-subtitle');
+              if (subtitleInput && subtitleInput !== document.activeElement) {
+                subtitleInput.value = section.header?.subtitle?.[lang] || '';
+              }
+              const visibleToggle = document.getElementById('section-visible');
+              if (visibleToggle) {
+                visibleToggle.checked = section.visible !== false;
+              }
+              const contentTextarea = document.getElementById('section-content');
+              if (contentTextarea && contentTextarea !== document.activeElement) {
+                contentTextarea.value = section.content?.[lang] || '';
+              }
+            }
+          }
+
+          // Re-render canvas
+          if (canvas) canvas.render();
+
+          // Push to history
+          history.push({ sections: editorState.sections, design: editorState.design });
+        });
+
+        // Initialize canvas
+        canvas = new CanvasEngine(editorState, {
+          onSectionSelect: (sectionId) => {
+            if (sectionId) {
+              renderSectionProperties(sectionId);
+            } else {
+              renderMenuSettings();
+            }
+          },
+          onItemSelect: (sectionId, itemId) => {
+            items.renderItemEditor(document.getElementById('right-panel-content'), sectionId, itemId);
+          },
+          onSectionDrop: async (action, sectionId, extra) => {
+            switch (action) {
+              case 'move-up': await sections.moveSection(sectionId, 'up'); break;
+              case 'move-down': await sections.moveSection(sectionId, 'down'); break;
+              case 'duplicate': {
+                const newSecId = await sections.duplicateSection(sectionId);
+                if (newSecId && canvas) {
+                  canvas.selectedSectionId = newSecId;
+                  canvas.selectedItemId = null;
+                  canvas.onSectionSelect(newSecId);
+                }
+                break;
+              }
+              case 'delete':
+                const confirmed = await confirm('Delete this section and all its items?');
+                if (confirmed) await sections.deleteSection(sectionId);
+                break;
+              case 'add-item': {
+                const newItemId = await items.addItem(sectionId);
+                if (newItemId && canvas) {
+                  canvas.selectedSectionId = sectionId;
+                  canvas.selectedItemId = newItemId;
+                  canvas.onItemSelect(sectionId, newItemId);
+                }
+                break;
+              }
+              case 'add-new': {
+                const newSecId = await sections.addSection(extra);
+                if (newSecId && canvas) {
+                  canvas.selectedSectionId = newSecId;
+                  canvas.selectedItemId = null;
+                  canvas.onSectionSelect(newSecId);
+                }
+                break;
+              }
+              case 'add-at': {
+                const targetSec = editorState.sections[sectionId];
+                if (targetSec) {
+                  const newSecId = await sections.addSection(extra, targetSec.order);
+                  if (newSecId && canvas) {
+                    canvas.selectedSectionId = newSecId;
+                    canvas.selectedItemId = null;
+                    canvas.onSectionSelect(newSecId);
+                  }
+                }
+                break;
+              }
+              case 'reorder': {
+                const secs = Object.entries(editorState.sections).sort(([, a], [, b]) => (a.order || 0) - (b.order || 0));
+                const targetIdx = secs.findIndex(([id]) => id === extra);
+                if (targetIdx !== -1) await sections.reorderSection(sectionId, targetIdx);
+                break;
+              }
+            }
+          },
+          onElementDrop: async (element, sectionId, itemId) => {
+            // Select the item first
+            canvas.selectedSectionId = sectionId;
+            canvas.selectedItemId = itemId;
+            items.renderItemEditor(document.getElementById('right-panel-content'), sectionId, itemId);
+            canvas._highlightSelected();
+
+            // Apply element after a brief render delay
+            setTimeout(() => {
+              applyElementToSelected(element);
+            }, 100);
+          }
+        });
+        window.canvas = canvas;
+        canvas.init(document.getElementById('canvas'));
+
+        // Initialize sections palette
+        sections.renderPalette(document.getElementById('section-palette'));
+
+        // Initialize design panel
+        design.renderDesignPanel(document.getElementById('design-panel'));
+
+        // Initialize shortcuts
+        shortcuts.init();
+        registerShortcuts();
+
+        // Elements Tab initialization
+        function initElementsTab() {
+          const elementsPanel = document.getElementById('left-tab-elements');
+          if (!elementsPanel) return;
+
+          elementsPanel.querySelectorAll('.section-palette__item').forEach(item => {
+            // Drag start
+            item.addEventListener('dragstart', (e) => {
+              e.dataTransfer.setData('text/plain', item.dataset.element);
+              e.dataTransfer.setData('type', 'element');
+            });
+
+            // Click handler
+            item.addEventListener('click', () => {
+              applyElementToSelected(item.dataset.element);
+            });
+          });
+        }
+
+        async function applyElementToSelected(element) {
+          const activeSectionId = canvas?.selectedSectionId;
+          const activeItemId = canvas?.selectedItemId;
+
+          if (element === 'divider') {
+            await sections.addSection('spacer');
+            return;
+          }
+          if (element === 'qr') {
+            const { showShareModal } = await import('./js/app.js');
+            await showShareModal(menuId);
+            return;
+          }
+
+          if (!activeSectionId || !activeItemId) {
+            toast.info('Please select a menu item on the canvas first to apply this element.');
+            return;
+          }
+
+          switch (element) {
+            case 'image': {
+              const itemMediaTab = document.querySelector('.tab[data-tab="media"]');
+              if (itemMediaTab) itemMediaTab.click();
+              const uploadZone = document.getElementById('item-image-upload');
+              if (uploadZone) uploadZone.click();
+              break;
+            }
+            case 'badge': {
+              const dietaryTab = document.querySelector('.tab[data-tab="dietary"]');
+              if (dietaryTab) dietaryTab.click();
+              toast.info("Select a dietary badge from the list in the right panel.");
+              break;
+            }
+            case 'allergens': {
+              const dietaryTab = document.querySelector('.tab[data-tab="dietary"]');
+              if (dietaryTab) dietaryTab.click();
+              toast.info("Select allergen icons from the checklist in the right panel.");
+              break;
+            }
+            case 'spice': {
+              const dietaryTab = document.querySelector('.tab[data-tab="dietary"]');
+              if (dietaryTab) dietaryTab.click();
+              const spiceInput = document.getElementById('item-spice');
+              if (spiceInput) {
+                const nextSpice = ((parseInt(spiceInput.value) || 0) + 1) % 6;
+                spiceInput.value = nextSpice;
+                spiceInput.dispatchEvent(new Event('input'));
+                toast.success(`Spice level set to ${'🌶'.repeat(nextSpice) || 'None'}`);
+              }
+              break;
+            }
+          }
+        }
+
+        initElementsTab();
+
+        // Listen to hotel media gallery
+        db.listen(`hotels/${hotelId}/media`, (mediaData) => {
+          const gallery = document.getElementById('media-gallery');
+          if (!gallery) return;
+
+          if (!mediaData) {
+            gallery.innerHTML = '<div style="grid-column: span 3; text-align: center; padding: 24px; color: var(--text-muted); font-size: 12px;">No images uploaded yet.</div>';
+            return;
+          }
+
+          gallery.innerHTML = Object.entries(mediaData).map(([id, item]) => `
+            <div class="media-thumb" data-id="${id}" data-url="${item.url}" draggable="true" style="position:relative; aspect-ratio:1; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; cursor: pointer; transition: transform var(--transition-fast);">
+              <img src="${item.url}" alt="${item.name || 'Image'}" style="width:100%; height:100%; object-fit:cover;">
+              <button class="delete-media-btn" data-id="${id}" style="position:absolute; top:2px; right:2px; background: rgba(0,0,0,0.6); color:white; border:none; border-radius:50%; width:18px; height:18px; display:flex; align-items:center; justify-content:center; font-size:10px; cursor:pointer; opacity:0; transition: opacity var(--transition-fast); z-index:10;">&times;</button>
+            </div>
+          `).join('');
+
+          // Bind media elements
+          gallery.querySelectorAll('.media-thumb').forEach(thumb => {
+            thumb.addEventListener('mouseenter', () => {
+              const btn = thumb.querySelector('.delete-media-btn');
+              if (btn) btn.style.opacity = '1';
+            });
+            thumb.addEventListener('mouseleave', () => {
+              const btn = thumb.querySelector('.delete-media-btn');
+              if (btn) btn.style.opacity = '0';
+            });
+
+            thumb.addEventListener('click', (e) => {
+              if (e.target.closest('.delete-media-btn')) {
+                e.stopPropagation();
+                const mediaId = e.target.closest('.delete-media-btn').dataset.id;
+                db.delete(`hotels/${hotelId}/media/${mediaId}`);
+                return;
+              }
+
+              const url = thumb.dataset.url;
+              if (canvas?.selectedSectionId && canvas?.selectedItemId) {
+                items.updateItem(canvas.selectedSectionId, canvas.selectedItemId, {
+                  'image/fileId': url,
+                  'image/position': 'right'
+                });
+                toast.success('Image applied to selected item');
+                // Re-render item editor
+                items.renderItemEditor(document.getElementById('right-panel-content'), canvas.selectedSectionId, canvas.selectedItemId);
+              } else {
+                toast.info('Select a menu item first, then click an image to apply it.');
+              }
+            });
+
+            // Drag and drop setup for media thumb
+            thumb.addEventListener('dragstart', (e) => {
+              e.dataTransfer.setData('text/plain', thumb.dataset.url);
+              e.dataTransfer.setData('type', 'media-image');
+              e.dataTransfer.effectAllowed = 'copy';
+            });
+          });
+        });
+
+        markSaved();
+      }
+    });
+
+    // ── Left panel tab switching ──
+    document.querySelectorAll('.editor-left__tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.editor-left__tab').forEach(t => {
+          t.classList.remove('editor-left__tab--active');
+          t.setAttribute('aria-selected', 'false');
+        });
+        tab.classList.add('editor-left__tab--active');
+        tab.setAttribute('aria-selected', 'true');
+
+        document.querySelectorAll('#left-panel .tab-panel').forEach(p => p.classList.remove('tab-panel--active'));
+        const panel = document.getElementById(`left-tab-${tab.dataset.tab}`);
+        if (panel) panel.classList.add('tab-panel--active');
+
+        // Refresh design panel if switching to it
+        if (tab.dataset.tab === 'design') {
+          design.renderDesignPanel(document.getElementById('design-panel'));
+        }
+      });
+    });
+
+    // ── Menu name inline edit ──
+    const menuNameInput = document.getElementById('menu-name-input');
+    menuNameInput.addEventListener('blur', () => {
+      const hotelId = state.get('currentHotelId');
+      const name = menuNameInput.value.trim() || 'Untitled Menu';
+      db.update(`hotels/${hotelId}/menus/${menuId}/meta`, { name, updatedAt: Date.now() });
+    });
+    menuNameInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') menuNameInput.blur();
+    });
+
+    // ── More dropdown ──
+    const moreBtn = document.getElementById('btn-more');
+    const moreMenu = document.getElementById('more-menu');
+    moreBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      moreMenu.classList.toggle('dropdown-menu--visible');
+    });
+    document.addEventListener('click', () => moreMenu.classList.remove('dropdown-menu--visible'));
+
+    moreMenu.querySelectorAll('.dropdown-item').forEach(item => {
+      item.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        moreMenu.classList.remove('dropdown-menu--visible');
+        const action = item.dataset.action;
+        const hotelId = state.get('currentHotelId');
+
+        switch (action) {
+          case 'publish': {
+            const { showShareModal } = await import('./js/app.js');
+            await showShareModal(menuId);
+            break;
+          }
+          case 'duplicate': {
+            const data = await db.get(`hotels/${hotelId}/menus/${menuId}`);
+            if (data) {
+              data.meta.name += ' (Copy)';
+              data.meta.status = 'draft';
+              data.meta.createdAt = Date.now();
+              data.meta.updatedAt = Date.now();
+              const newId = await db.push(`hotels/${hotelId}/menus`, data);
+              toast.success('Menu duplicated');
+              navigateTo(`editor.html?id=${newId}`);
+            }
+            break;
+          }
+          case 'export-pdf':
+            navigateTo(`preview.html?id=${menuId}&mode=print`);
+            break;
+          case 'export-png':
+            navigateTo(`preview.html?id=${menuId}&mode=png`);
+            break;
+          case 'export-json': {
+            const data = await db.get(`hotels/${hotelId}/menus/${menuId}`);
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${editorState.meta.name || 'menu'}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            toast.success('JSON exported');
+            break;
+          }
+          case 'share': {
+            const { showShareModal } = await import('./js/app.js');
+            await showShareModal(menuId);
+            break;
+          }
+          case 'print':
+            navigateTo(`preview.html?id=${menuId}&mode=print&auto=true`);
+            break;
+          case 'delete': {
+            const ok = await confirm('Are you sure you want to delete this menu? This cannot be undone.', { title: 'Delete Menu' });
+            if (ok) {
+              await db.delete(`hotels/${hotelId}/menus/${menuId}`);
+              toast.success('Menu deleted');
+              navigateTo('dashboard.html');
+            }
+            break;
+          }
+        }
+      });
+    });
+
+    // ── Undo / Redo ──
+    document.getElementById('btn-undo').addEventListener('click', () => {
+      const snapshot = history.undo();
+      if (snapshot) applySnapshot(snapshot);
+    });
+    document.getElementById('btn-redo').addEventListener('click', () => {
+      const snapshot = history.redo();
+      if (snapshot) applySnapshot(snapshot);
+    });
+
+    async function applySnapshot(snapshot) {
+      const hotelId = state.get('currentHotelId');
+      try {
+        await db.update(`hotels/${hotelId}/menus/${menuId}`, {
+          sections: snapshot.sections,
+          design: snapshot.design
+        });
+      } catch (err) {
+        toast.error('Failed to apply undo/redo');
+      }
+    }
+
+    // ── Save button ──
+    document.getElementById('btn-save').addEventListener('click', async () => {
+      markSaving();
+      const hotelId = state.get('currentHotelId');
+      try {
+        await db.update(`hotels/${hotelId}/menus/${menuId}/meta`, { updatedAt: Date.now() });
+        markSaved();
+        toast.success('Menu saved');
+      } catch {
+        markError();
+      }
+    });
+
+    // ── Preview ──
+    document.getElementById('btn-preview').addEventListener('click', () => {
+      navigateTo(`preview.html?id=${menuId}`);
+    });
+
+    // ── Theme toggle ──
+    document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+
+    // ── Media upload ──
+    const mediaZone = document.getElementById('media-upload-zone');
+    const mediaInput = document.getElementById('media-file-input');
+    mediaZone.addEventListener('click', () => mediaInput.click());
+    mediaZone.addEventListener('dragover', (e) => { e.preventDefault(); mediaZone.style.borderColor = 'var(--accent)'; });
+    mediaZone.addEventListener('dragleave', () => { mediaZone.style.borderColor = ''; });
+    mediaZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      mediaZone.style.borderColor = '';
+      if (e.dataTransfer.files.length) handleMediaUpload(e.dataTransfer.files);
+    });
+    mediaInput.addEventListener('change', (e) => {
+      if (e.target.files.length) handleMediaUpload(e.target.files);
+    });
+
+    async function handleMediaUpload(files) {
+      const { default: imageKit } = await import('./js/imagekit.js');
+      const hotelId = state.get('currentHotelId');
+      for (const file of files) {
+        const loadingId = toast.loading(`Uploading ${file.name}...`);
+        try {
+          const result = await imageKit.upload(file, {
+            hotelId,
+            menuId,
+            onProgress: (p) => { }
+          });
+
+          // Save to Firebase under hotels/${hotelId}/media
+          const mediaId = db.newKey(`hotels/${hotelId}/media`);
+          await db.set(`hotels/${hotelId}/media/${mediaId}`, {
+            url: result.url,
+            name: file.name,
+            size: result.size,
+            uploadedAt: Date.now()
+          });
+
+          toast.dismiss(loadingId);
+          toast.success('Image uploaded');
+        } catch (err) {
+          toast.dismiss(loadingId);
+          toast.error(`Upload failed: ${err.message}`);
+        }
+      }
+    }
+
+
+    // ── Right panel: render menu settings when nothing selected ──
+    function renderMenuSettings() {
+      const panelContent = document.getElementById('right-panel-content');
+      if (!panelContent) return;
+
+      const lang = editorState.primaryLanguage || 'en';
+
+      panelContent.innerHTML = `
+        <div class="editor-right__header">
+          <h3 class="editor-right__title">Menu Settings</h3>
+        </div>
+        <div class="editor-right__content" id="right-content">
+          <div class="prop-section">
+            <div class="prop-section__title">Menu Info</div>
+            <div class="prop-row">
+              <label class="prop-label">Name</label>
+              <input type="text" class="input" id="menu-settings-name" placeholder="Menu name" value="${editorState.meta?.name || ''}">
+            </div>
+            <div class="prop-row">
+              <label class="prop-label">Description</label>
+              <textarea class="input" id="menu-settings-desc" rows="2" placeholder="Menu description">${editorState.meta?.description || ''}</textarea>
+            </div>
+            <div class="prop-row">
+              <label class="prop-label">Language</label>
+              <select class="input" id="menu-settings-language">
+                <option value="en" ${lang === 'en' ? 'selected' : ''}>🇬🇧 English</option>
+                <option value="ar" ${lang === 'ar' ? 'selected' : ''}>🇸🇦 Arabic</option>
+                <option value="fr" ${lang === 'fr' ? 'selected' : ''}>🇫🇷 French</option>
+                <option value="es" ${lang === 'es' ? 'selected' : ''}>🇪🇸 Spanish</option>
+                <option value="de" ${lang === 'de' ? 'selected' : ''}>🇩🇪 German</option>
+                <option value="zh" ${lang === 'zh' ? 'selected' : ''}>🇹🇼 Chinese</option>
+              </select>
+            </div>
+            <div class="prop-row">
+              <label class="prop-label">Currency</label>
+              <select class="input" id="menu-settings-currency">
+                <option value="USD" ${editorState.currency === 'USD' ? 'selected' : ''}>USD ($)</option>
+                <option value="EUR" ${editorState.currency === 'EUR' ? 'selected' : ''}>EUR (€)</option>
+                <option value="GBP" ${editorState.currency === 'GBP' ? 'selected' : ''}>GBP (£)</option>
+                <option value="AED" ${editorState.currency === 'AED' ? 'selected' : ''}>AED (د.إ)</option>
+                <option value="INR" ${editorState.currency === 'INR' ? 'selected' : ''}>INR (₹)</option>
+                <option value="JPY" ${editorState.currency === 'JPY' ? 'selected' : ''}>JPY (¥)</option>
+              </select>
+            </div>
+          </div>
+          <div class="prop-section">
+            <div class="prop-section__title">Display Options</div>
+            <div class="prop-row prop-row--inline">
+              <span class="prop-label">Show Prices</span>
+              <label class="toggle"><input type="checkbox" class="toggle__input" id="show-prices" ${editorState.design?.showPrices !== false ? 'checked' : ''}><span class="toggle__slider"></span></label>
+            </div>
+            <div class="prop-row prop-row--inline">
+              <span class="prop-label">Show Calories</span>
+              <label class="toggle"><input type="checkbox" class="toggle__input" id="show-calories" ${editorState.design?.showCalories ? 'checked' : ''}><span class="toggle__slider"></span></label>
+            </div>
+            <div class="prop-row prop-row--inline">
+              <span class="prop-label">Show Allergens</span>
+              <label class="toggle"><input type="checkbox" class="toggle__input" id="show-allergens" ${editorState.design?.showAllergens !== false ? 'checked' : ''}><span class="toggle__slider"></span></label>
+            </div>
+            <div class="prop-row prop-row--inline">
+              <span class="prop-label">Show Item Numbers</span>
+              <label class="toggle"><input type="checkbox" class="toggle__input" id="show-numbers" ${editorState.design?.showItemNumbers ? 'checked' : ''}><span class="toggle__slider"></span></label>
+            </div>
+          </div>
+        </div>
+      `;
+
+      bindMenuSettingsListeners();
+    }
+
+    function bindMenuSettingsListeners() {
+      const hotelId = state.get('currentHotelId');
+      if (!hotelId) return;
+
+      const nameInput = document.getElementById('menu-settings-name');
+      nameInput?.addEventListener('input', debounce(() => {
+        const val = nameInput.value.trim();
+        if (val) db.update(`hotels/${hotelId}/menus/${menuId}/meta`, { name: val, updatedAt: Date.now() });
+      }, 500));
+
+      const descInput = document.getElementById('menu-settings-desc');
+      descInput?.addEventListener('input', debounce(() => {
+        const val = descInput.value.trim();
+        db.update(`hotels/${hotelId}/menus/${menuId}/meta`, { description: val, updatedAt: Date.now() });
+      }, 500));
+
+      const langSelect = document.getElementById('menu-settings-language');
+      langSelect?.addEventListener('change', () => {
+        const val = langSelect.value;
+        db.update(`hotels/${hotelId}/menus/${menuId}/meta`, { primaryLanguage: val, updatedAt: Date.now() });
+      });
+
+      const currencySelect = document.getElementById('menu-settings-currency');
+      currencySelect?.addEventListener('change', () => {
+        const val = currencySelect.value;
+        db.update(`hotels/${hotelId}/menus/${menuId}/meta`, { currency: val, updatedAt: Date.now() });
+      });
+
+      // Display options checkboxes
+      const showPricesCheckbox = document.getElementById('show-prices');
+      showPricesCheckbox?.addEventListener('change', () => {
+        db.update(`hotels/${hotelId}/menus/${menuId}/design`, { showPrices: showPricesCheckbox.checked });
+      });
+
+      const showCaloriesCheckbox = document.getElementById('show-calories');
+      showCaloriesCheckbox?.addEventListener('change', () => {
+        db.update(`hotels/${hotelId}/menus/${menuId}/design`, { showCalories: showCaloriesCheckbox.checked });
+      });
+
+      const showAllergensCheckbox = document.getElementById('show-allergens');
+      showAllergensCheckbox?.addEventListener('change', () => {
+        db.update(`hotels/${hotelId}/menus/${menuId}/design`, { showAllergens: showAllergensCheckbox.checked });
+      });
+
+      const showNumbersCheckbox = document.getElementById('show-numbers');
+      showNumbersCheckbox?.addEventListener('change', () => {
+        db.update(`hotels/${hotelId}/menus/${menuId}/design`, { showItemNumbers: showNumbersCheckbox.checked });
+      });
+    }
+
+    function renderSectionProperties(sectionId) {
+      const section = editorState.sections[sectionId];
+      if (!section) return;
+
+      // Re-create right properties panel structure if wiped by item editor
+      let content = document.getElementById('right-content');
+      if (!content) {
+        const panelContent = document.getElementById('right-panel-content');
+        panelContent.innerHTML = `
+          <div class="editor-right__header">
+            <h3 class="editor-right__title">Section Settings</h3>
+          </div>
+          <div class="editor-right__content" id="right-content"></div>
+        `;
+        content = document.getElementById('right-content');
+      } else {
+        const titleEl = document.querySelector('.editor-right__title');
+        if (titleEl) titleEl.textContent = 'Section Settings';
+      }
+
+      const lang = editorState.primaryLanguage || 'en';
+
+      content.innerHTML = `
+        <div class="prop-section">
+          <div class="prop-section__title">Section: ${section.type}</div>
+          <div class="prop-row">
+            <label class="prop-label">Title</label>
+            <input type="text" class="input" id="section-title" value="${section.header?.title?.[lang] || ''}">
+          </div>
+          <div class="prop-row">
+            <label class="prop-label">Subtitle</label>
+            <input type="text" class="input" id="section-subtitle" value="${section.header?.subtitle?.[lang] || ''}">
+          </div>
+          ${section.type === 'textBlock' ? `
+            <div class="prop-row">
+              <label class="prop-label">Content</label>
+              <textarea class="input" id="section-content" rows="4" placeholder="Enter text block content...">${section.content?.[lang] || ''}</textarea>
+            </div>
+          ` : ''}
+        </div>
+        <div class="prop-section">
+          <div class="prop-section__title">Visibility</div>
+          <div class="prop-row prop-row--inline">
+            <span class="prop-label">Visible</span>
+            <label class="toggle"><input type="checkbox" class="toggle__input" id="section-visible" ${section.visible !== false ? 'checked' : ''}><span class="toggle__slider"></span></label>
+          </div>
+        </div>
+        <div style="padding-top:var(--space-4);">
+          <button class="btn btn--primary btn--block btn--sm" id="add-item-to-section">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 3v8M3 7h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            Add Item to Section
+          </button>
+        </div>
+      `;
+
+      // Bind
+      const hotelId = state.get('currentHotelId');
+      const titleInput = content.querySelector('#section-title');
+      titleInput?.addEventListener('input', debounce(() => {
+        db.update(`hotels/${hotelId}/menus/${menuId}/sections/${sectionId}/header/title`, { [lang]: titleInput.value });
+      }, 500));
+
+      const subtitleInput = content.querySelector('#section-subtitle');
+      subtitleInput?.addEventListener('input', debounce(() => {
+        db.update(`hotels/${hotelId}/menus/${menuId}/sections/${sectionId}/header/subtitle`, { [lang]: subtitleInput.value });
+      }, 500));
+
+      if (section.type === 'textBlock') {
+        const contentTextarea = content.querySelector('#section-content');
+        contentTextarea?.addEventListener('input', debounce(() => {
+          db.update(`hotels/${hotelId}/menus/${menuId}/sections/${sectionId}/content`, { [lang]: contentTextarea.value });
+        }, 500));
+      }
+
+      const visibleToggle = content.querySelector('#section-visible');
+      visibleToggle?.addEventListener('change', () => {
+        db.update(`hotels/${hotelId}/menus/${menuId}/sections/${sectionId}`, { visible: visibleToggle.checked });
+      });
+
+      content.querySelector('#add-item-to-section')?.addEventListener('click', async () => {
+        const newItemId = await items.addItem(sectionId);
+        if (newItemId && canvas) {
+          canvas.selectedSectionId = sectionId;
+          canvas.selectedItemId = newItemId;
+          canvas.onItemSelect(sectionId, newItemId);
+        }
+      });
+    }
+
+    // ── Keyboard shortcuts ──
+    function registerShortcuts() {
+      shortcuts.register('ctrl+s', (e) => {
+        document.getElementById('btn-save').click();
+      }, 'Save');
+
+      shortcuts.register('ctrl+z', () => {
+        document.getElementById('btn-undo').click();
+      }, 'Undo');
+
+      shortcuts.register('ctrl+shift+z', () => {
+        document.getElementById('btn-redo').click();
+      }, 'Redo');
+
+      shortcuts.register('ctrl+p', () => {
+        document.getElementById('btn-preview').click();
+      }, 'Preview');
+
+      shortcuts.register('ctrl+d', () => {
+        if (canvas?.selectedSectionId) {
+          sections.duplicateSection(canvas.selectedSectionId);
+        }
+      }, 'Duplicate selected');
+
+      shortcuts.register('escape', () => {
+        if (canvas) canvas.deselect();
+        renderMenuSettings();
+      }, 'Deselect');
+
+      shortcuts.register('delete', async () => {
+        if (canvas?.selectedItemId) {
+          const ok = await confirm('Delete this item?');
+          if (ok) items.deleteItem(canvas.selectedSectionId, canvas.selectedItemId);
+        } else if (canvas?.selectedSectionId) {
+          const ok = await confirm('Delete this section?');
+          if (ok) sections.deleteSection(canvas.selectedSectionId);
+        }
+      }, 'Delete selected');
+
+      shortcuts.register('ctrl++', () => canvas?.setZoom(Math.min(canvas.zoom + 10, 200)), 'Zoom in');
+      shortcuts.register('ctrl+-', () => canvas?.setZoom(Math.max(canvas.zoom - 10, 30)), 'Zoom out');
+      shortcuts.register('ctrl+0', () => canvas?.setZoom(100), 'Reset zoom');
+
+      shortcuts.register('v', () => canvas?.setMode('select'), 'Select tool');
+      shortcuts.register('h', () => canvas?.setMode('pan'), 'Hand/Pan tool');
+
+      shortcuts.register('up', () => {
+        if (canvas?.selectedSectionId) sections.moveSection(canvas.selectedSectionId, 'up');
+      }, 'Move section up');
+
+      shortcuts.register('down', () => {
+        if (canvas?.selectedSectionId) sections.moveSection(canvas.selectedSectionId, 'down');
+      }, 'Move section down');
+    }
+  </script>
+</body>
+
+</html>

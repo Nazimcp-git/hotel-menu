@@ -1,0 +1,288 @@
+/* ============================================
+   MenuForge — Design Tokens
+   All CSS custom properties for the application
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:wght@400;500;600;700;800&family=Lato:wght@300;400;700&family=Cormorant+Garamond:wght@400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;700&family=Libre+Baskerville:wght@400;700&family=Source+Sans+3:wght@300;400;600;700&family=Merriweather:wght@300;400;700&family=Outfit:wght@300;400;500;600;700&family=DM+Serif+Display&family=Crimson+Pro:wght@400;500;600;700&display=swap');
+
+:root {
+  /* ── Spacing Scale ── */
+  --space-0: 0px;
+  --space-px: 1px;
+  --space-0-5: 2px;
+  --space-1: 4px;
+  --space-1-5: 6px;
+  --space-2: 8px;
+  --space-2-5: 10px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+  --space-9: 36px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-14: 56px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+
+  /* ── Border Radius ── */
+  --radius-none: 0;
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-3xl: 24px;
+  --radius-full: 9999px;
+
+  /* ── Shadows ── */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.10), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.04);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.16), 0 8px 16px rgba(0, 0, 0, 0.06);
+  --shadow-2xl: 0 24px 64px rgba(0, 0, 0, 0.20);
+  --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow-focus: 0 0 0 3px rgba(37, 99, 235, 0.3);
+  --shadow-focus-danger: 0 0 0 3px rgba(220, 38, 38, 0.3);
+
+  /* ── App Colors (Light Mode) ── */
+  --app-bg: #F7F7F5;
+  --app-bg-subtle: #EDEDEB;
+  --panel-bg: #FFFFFF;
+  --panel-bg-hover: #FAFAF8;
+  --panel-bg-active: #F0F0EE;
+  --surface: #FFFFFF;
+  --surface-raised: #FFFFFF;
+  --surface-overlay: #FFFFFF;
+  --border: #E5E5E3;
+  --border-light: #EFEFED;
+  --border-strong: #D5D5D3;
+  --border-focus: #2563EB;
+
+  /* Text Colors */
+  --text-primary: #1A1A18;
+  --text-secondary: #6B6B69;
+  --text-muted: #9B9B99;
+  --text-disabled: #C5C5C3;
+  --text-inverse: #FFFFFF;
+  --text-link: #2563EB;
+
+  /* Brand / Accent */
+  --accent: #2563EB;
+  --accent-hover: #1D4ED8;
+  --accent-active: #1E40AF;
+  --accent-subtle: #EFF6FF;
+  --accent-muted: #DBEAFE;
+
+  /* Semantic Colors */
+  --success: #16A34A;
+  --success-bg: #F0FDF4;
+  --success-border: #BBF7D0;
+  --warning: #CA8A04;
+  --warning-bg: #FEFCE8;
+  --warning-border: #FEF08A;
+  --danger: #DC2626;
+  --danger-bg: #FEF2F2;
+  --danger-border: #FECACA;
+  --danger-hover: #B91C1C;
+  --info: #0284C7;
+  --info-bg: #F0F9FF;
+  --info-border: #BAE6FD;
+
+  /* Status Colors */
+  --status-active: #16A34A;
+  --status-draft: #CA8A04;
+  --status-archived: #9B9B99;
+  --status-sold-out: #DC2626;
+
+  /* ── Typography ── */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  --font-display: 'Outfit', var(--font-sans);
+
+  /* Font Sizes */
+  --text-2xs: 0.625rem;   /* 10px */
+  --text-xs: 0.6875rem;   /* 11px */
+  --text-sm: 0.8125rem;   /* 13px */
+  --text-base: 0.9375rem; /* 15px */
+  --text-lg: 1.0625rem;   /* 17px */
+  --text-xl: 1.25rem;     /* 20px */
+  --text-2xl: 1.5rem;     /* 24px */
+  --text-3xl: 1.875rem;   /* 30px */
+  --text-4xl: 2.25rem;    /* 36px */
+  --text-5xl: 3rem;       /* 48px */
+  --text-6xl: 3.75rem;    /* 60px */
+
+  /* Font Weights */
+  --weight-light: 300;
+  --weight-normal: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-extrabold: 800;
+
+  /* Line Heights */
+  --leading-none: 1;
+  --leading-tight: 1.25;
+  --leading-snug: 1.375;
+  --leading-normal: 1.6;
+  --leading-relaxed: 1.75;
+  --leading-loose: 2;
+
+  /* Letter Spacing */
+  --tracking-tighter: -0.05em;
+  --tracking-tight: -0.025em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.025em;
+  --tracking-wider: 0.05em;
+  --tracking-widest: 0.1em;
+
+  /* ── Transitions ── */
+  --transition-fastest: 75ms ease;
+  --transition-fast: 100ms ease;
+  --transition-base: 200ms ease;
+  --transition-slow: 300ms ease;
+  --transition-slower: 400ms ease;
+  --transition-slowest: 500ms ease;
+  --transition-spring: 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  --transition-bounce: 500ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  /* ── Z-Index Scale ── */
+  --z-base: 0;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-overlay: 300;
+  --z-modal: 400;
+  --z-popover: 500;
+  --z-tooltip: 600;
+  --z-toast: 700;
+  --z-max: 9999;
+
+  /* ── Layout ── */
+  --header-height: 56px;
+  --left-panel-width: 280px;
+  --right-panel-width: 320px;
+  --sidebar-width: 240px;
+  --max-content-width: 1400px;
+  --canvas-min-width: 400px;
+
+  /* ── Misc ── */
+  --backdrop-blur: 12px;
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.18);
+}
+
+/* ── Dark Mode ── */
+[data-theme="dark"],
+.dark {
+  --app-bg: #0F0F0E;
+  --app-bg-subtle: #1A1A18;
+  --panel-bg: #1C1C1A;
+  --panel-bg-hover: #242422;
+  --panel-bg-active: #2C2C2A;
+  --surface: #1C1C1A;
+  --surface-raised: #242422;
+  --surface-overlay: #2C2C2A;
+  --border: #2E2E2C;
+  --border-light: #242422;
+  --border-strong: #3E3E3C;
+  --border-focus: #3B82F6;
+
+  --text-primary: #EDEDEB;
+  --text-secondary: #A8A8A6;
+  --text-muted: #6B6B69;
+  --text-disabled: #4A4A48;
+  --text-inverse: #1A1A18;
+  --text-link: #60A5FA;
+
+  --accent: #3B82F6;
+  --accent-hover: #60A5FA;
+  --accent-active: #2563EB;
+  --accent-subtle: #172554;
+  --accent-muted: #1E3A5F;
+
+  --success: #22C55E;
+  --success-bg: #052E16;
+  --success-border: #166534;
+  --warning: #EAB308;
+  --warning-bg: #422006;
+  --warning-border: #854D0E;
+  --danger: #EF4444;
+  --danger-bg: #450A0A;
+  --danger-border: #991B1B;
+  --danger-hover: #F87171;
+  --info: #38BDF8;
+  --info-bg: #0C4A6E;
+  --info-border: #075985;
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6), 0 4px 8px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.7);
+  --shadow-2xl: 0 24px 64px rgba(0, 0, 0, 0.8);
+
+  --glass-bg: rgba(28, 28, 26, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.06);
+}
+
+/* Auto dark mode from OS preference */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --app-bg: #0F0F0E;
+    --app-bg-subtle: #1A1A18;
+    --panel-bg: #1C1C1A;
+    --panel-bg-hover: #242422;
+    --panel-bg-active: #2C2C2A;
+    --surface: #1C1C1A;
+    --surface-raised: #242422;
+    --surface-overlay: #2C2C2A;
+    --border: #2E2E2C;
+    --border-light: #242422;
+    --border-strong: #3E3E3C;
+    --border-focus: #3B82F6;
+
+    --text-primary: #EDEDEB;
+    --text-secondary: #A8A8A6;
+    --text-muted: #6B6B69;
+    --text-disabled: #4A4A48;
+    --text-inverse: #1A1A18;
+    --text-link: #60A5FA;
+
+    --accent: #3B82F6;
+    --accent-hover: #60A5FA;
+    --accent-active: #2563EB;
+    --accent-subtle: #172554;
+    --accent-muted: #1E3A5F;
+
+    --success: #22C55E;
+    --success-bg: #052E16;
+    --success-border: #166534;
+    --warning: #EAB308;
+    --warning-bg: #422006;
+    --warning-border: #854D0E;
+    --danger: #EF4444;
+    --danger-bg: #450A0A;
+    --danger-border: #991B1B;
+    --danger-hover: #F87171;
+    --info: #38BDF8;
+    --info-bg: #0C4A6E;
+    --info-border: #075985;
+
+    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.2);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6), 0 4px 8px rgba(0, 0, 0, 0.3);
+    --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.7);
+    --shadow-2xl: 0 24px 64px rgba(0, 0, 0, 0.8);
+
+    --glass-bg: rgba(28, 28, 26, 0.85);
+    --glass-border: rgba(255, 255, 255, 0.06);
+  }
+}

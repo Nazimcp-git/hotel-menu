@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property Onboarding — MenuForge</title>
+  <meta name="description" content="Set up your property profile on MenuForge.">
+  
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: "Google Sans", sans-serif;
+      background: var(--app-bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .onboarding-layout {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-8) var(--space-4);
+      background: radial-gradient(ellipse at 50% 0%, rgba(201, 169, 110, 0.15) 0%, rgba(0, 0, 0, 0) 70%), var(--app-bg);
+    }
+
+    .onboarding-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+      width: 100%;
+      max-width: 580px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      animation: cardFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes cardFadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .onboarding-header {
+      background: linear-gradient(135deg, #0F172A, #1E293B);
+      color: #fff;
+      padding: var(--space-8);
+      text-align: center;
+      position: relative;
+    }
+
+    .onboarding-header__logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      margin-bottom: var(--space-3);
+    }
+
+    .onboarding-header__logo-icon {
+      font-size: 24px;
+      background: var(--accent);
+      color: #0F172A;
+      width: 42px;
+      height: 42px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    .onboarding-header__logo-text {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+    }
+
+    .onboarding-header__title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: var(--space-2);
+    }
+
+    .onboarding-header__subtitle {
+      font-size: 14px;
+      color: #94A3B8;
+    }
+
+    .onboarding-body {
+      padding: var(--space-8);
+      flex: 1;
+    }
+
+    /* Stepper Progress Indicator */
+    .onboarding-steps {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: var(--space-8);
+      position: relative;
+    }
+
+    .onboarding-steps::before {
+      content: '';
+      position: absolute;
+      top: 14px;
+      left: var(--space-6);
+      right: var(--space-6);
+      height: 2px;
+      background: var(--border);
+      z-index: 1;
+    }
+
+    .onboarding-step-indicator {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-2);
+      width: 80px;
+    }
+
+    .onboarding-step-num {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--app-bg-subtle);
+      border: 2px solid var(--border);
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    .onboarding-step-indicator--active .onboarding-step-num {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #0F172A;
+      box-shadow: 0 0 12px rgba(201, 169, 110, 0.4);
+    }
+
+    .onboarding-step-indicator--completed .onboarding-step-num {
+      background: var(--success);
+      border-color: var(--success);
+      color: #fff;
+    }
+
+    .onboarding-step-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .onboarding-step-indicator--active .onboarding-step-label {
+      color: var(--text);
+      font-weight: bold;
+    }
+
+    /* Steps Content panels */
+    .step-panel {
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .step-panel--active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateX(10px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    /* Drag & Drop Upload Zone */
+    .upload-zone {
+      border: 2px dashed var(--border);
+      background: var(--app-bg-subtle);
+      border-radius: var(--radius-lg);
+      padding: var(--space-8) var(--space-4);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .upload-zone:hover, .upload-zone--dragover {
+      border-color: var(--accent);
+      background: rgba(201, 169, 110, 0.05);
+    }
+
+    .upload-zone__icon {
+      font-size: 32px;
+      margin-bottom: var(--space-3);
+      display: block;
+    }
+
+    .upload-zone__text {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .logo-preview-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-4);
+    }
+
+    .logo-preview-img {
+      max-width: 180px;
+      max-height: 80px;
+      object-fit: contain;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 6px;
+      background: #fff;
+    }
+
+    .onboarding-footer {
+      padding: var(--space-6) var(--space-8);
+      border-top: 1px solid var(--border);
+      background: var(--app-bg-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="onboarding-layout">
+    <div class="onboarding-card">
+      <div class="onboarding-header">
+        <div class="onboarding-header__logo">
+          <div class="onboarding-header__logo-icon">⚜️</div>
+          <span class="onboarding-header__logo-text">MenuForge</span>
+        </div>
+        <h1 class="onboarding-header__title">Set up your Property</h1>
+        <p class="onboarding-header__subtitle">Let's configure your branding settings to start building menus.</p>
+      </div>
+
+      <div class="onboarding-body">
+        <!-- Stepper Indicator -->
+        <div class="onboarding-steps">
+          <div class="onboarding-step-indicator onboarding-step-indicator--active" data-step="1">
+            <div class="onboarding-step-num">1</div>
+            <span class="onboarding-step-label">Basics</span>
+          </div>
+          <div class="onboarding-step-indicator" data-step="2">
+            <div class="onboarding-step-num">2</div>
+            <span class="onboarding-step-label">Contact</span>
+          </div>
+          <div class="onboarding-step-indicator" data-step="3">
+            <div class="onboarding-step-num">3</div>
+            <span class="onboarding-step-label">Identity</span>
+          </div>
+        </div>
+
+        <form id="onboarding-form">
+          <!-- Step 1: Basics -->
+          <div class="step-panel step-panel--active" id="step-panel-1">
+            <div class="input-group mb-4">
+              <label class="input-label input-label--required" for="ob-hotel-name">Property Name</label>
+              <input type="text" class="input input--lg" id="ob-hotel-name" placeholder="e.g., Grand Hotel Lisboa" required>
+            </div>
+            <div class="input-group">
+              <label class="input-label" for="ob-hotel-desc">Property Description / Slogan</label>
+              <textarea class="input" id="ob-hotel-desc" rows="3" placeholder="e.g., Authentic Mediterranean dining by the sea..."></textarea>
+            </div>
+          </div>
+
+          <!-- Step 2: Location & Contact -->
+          <div class="step-panel" id="step-panel-2">
+            <div class="input-group mb-4">
+              <label class="input-label" for="ob-hotel-location">Physical Location / Address</label>
+              <input type="text" class="input" id="ob-hotel-location" placeholder="e.g., Lisbon, Portugal">
+            </div>
+            <div class="input-group mb-4">
+              <label class="input-label" for="ob-hotel-phone">Contact Phone Number</label>
+              <input type="tel" class="input" id="ob-hotel-phone" placeholder="e.g., +351 213 456 789">
+            </div>
+            <div class="input-group">
+              <label class="input-label" for="ob-hotel-currency">Default Currency</label>
+              <select class="input" id="ob-hotel-currency">
+                <option value="USD">USD ($)</option>
+                <option value="EUR" selected>EUR (€)</option>
+                <option value="GBP">GBP (£)</option>
+                <option value="AED">AED (د.إ)</option>
+                <option value="SAR">SAR (ر.س)</option>
+                <option value="INR">INR (₹)</option>
+                <option value="JPY">JPY (¥)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Step 3: Brand Identity (Logo) -->
+          <div class="step-panel" id="step-panel-3">
+            <div class="input-group">
+              <label class="input-label">Property Logo</label>
+              
+              <div class="upload-zone" id="ob-logo-upload-zone">
+                <input type="file" id="ob-logo-file" accept="image/*" style="display: none;">
+                <div class="upload-zone__content" id="upload-zone-prompt">
+                  <span class="upload-zone__icon">📤</span>
+                  <span class="upload-zone__text">Drag your logo here or click to select a file</span>
+                </div>
+              </div>
+              
+              <div class="logo-preview-wrap hidden" id="logo-preview-wrap">
+                <img src="" alt="Brand Logo Preview" class="logo-preview-img" id="ob-logo-preview-img">
+                <button type="button" class="btn btn--danger btn--sm" id="btn-remove-ob-logo">Remove Logo</button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="onboarding-footer">
+        <button class="btn btn--ghost hidden" id="btn-ob-back">Back</button>
+        <div style="flex:1;"></div>
+        <button class="btn btn--primary" id="btn-ob-next">Next</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initApp, toast, navigateTo } from './js/app.js';
+    import authManager from './js/auth.js';
+    import db from './js/db.js';
+    import imageKit from './js/imagekit.js';
+
+    let currentStep = 1;
+    const totalSteps = 3;
+    let uploadedLogoUrl = '';
+    let selectedFile = null;
+
+    // Load App context
+    await initApp({
+      requiresAuth: true,
+      onReady: (user) => {
+        // Safe to proceed
+      }
+    });
+
+    const form = document.getElementById('onboarding-form');
+    const btnBack = document.getElementById('btn-ob-back');
+    const btnNext = document.getElementById('btn-ob-next');
+    const uploadZone = document.getElementById('ob-logo-upload-zone');
+    const fileInput = document.getElementById('ob-logo-file');
+    const previewWrap = document.getElementById('logo-preview-wrap');
+    const previewImg = document.getElementById('ob-logo-preview-img');
+    const removeLogoBtn = document.getElementById('btn-remove-ob-logo');
+    const uploadPrompt = document.getElementById('upload-zone-prompt');
+
+    function updateStepIndicator() {
+      document.querySelectorAll('.onboarding-step-indicator').forEach((el, index) => {
+        const step = index + 1;
+        el.classList.toggle('onboarding-step-indicator--active', step === currentStep);
+        el.classList.toggle('onboarding-step-indicator--completed', step < currentStep);
+      });
+
+      document.querySelectorAll('.step-panel').forEach((panel, index) => {
+        panel.classList.toggle('step-panel--active', index + 1 === currentStep);
+      });
+
+      btnBack.classList.toggle('hidden', currentStep === 1);
+      btnNext.textContent = currentStep === totalSteps ? 'Finish Setup' : 'Next';
+    }
+
+    // Step navigation
+    btnNext.addEventListener('click', async () => {
+      // Validate inputs for current step
+      if (currentStep === 1) {
+        const name = document.getElementById('ob-hotel-name').value.trim();
+        if (!name) {
+          toast.warning('Please enter a property name');
+          return;
+        }
+      }
+
+      if (currentStep < totalSteps) {
+        currentStep++;
+        updateStepIndicator();
+      } else {
+        // Finish setup and save property info
+        await completeOnboarding();
+      }
+    });
+
+    btnBack.addEventListener('click', () => {
+      if (currentStep > 1) {
+        currentStep--;
+        updateStepIndicator();
+      }
+    });
+
+    // Logo Upload Logic
+    uploadZone.addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) handleFileSelected(file);
+    });
+
+    // Drag and drop events
+    uploadZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadZone.classList.add('upload-zone--dragover');
+    });
+
+    uploadZone.addEventListener('dragleave', () => {
+      uploadZone.classList.remove('upload-zone--dragover');
+    });
+
+    uploadZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadZone.classList.remove('upload-zone--dragover');
+      const file = e.dataTransfer.files[0];
+      if (file) handleFileSelected(file);
+    });
+
+    function handleFileSelected(file) {
+      if (!file.type.startsWith('image/')) {
+        toast.error('Please upload an image file');
+        return;
+      }
+      selectedFile = file;
+
+      // Show temporary preview using URL.createObjectURL
+      previewImg.src = URL.createObjectURL(file);
+      previewWrap.classList.remove('hidden');
+      uploadZone.classList.add('hidden');
+    }
+
+    removeLogoBtn.addEventListener('click', () => {
+      selectedFile = null;
+      uploadedLogoUrl = '';
+      previewImg.src = '';
+      previewWrap.classList.add('hidden');
+      uploadZone.classList.remove('hidden');
+      fileInput.value = '';
+    });
+
+    // Complete Onboarding
+    async function completeOnboarding() {
+      const name = document.getElementById('ob-hotel-name').value.trim();
+      const description = document.getElementById('ob-hotel-desc').value.trim();
+      const location = document.getElementById('ob-hotel-location').value.trim();
+      const phone = document.getElementById('ob-hotel-phone').value.trim();
+      const currency = document.getElementById('ob-hotel-currency').value;
+
+      const user = authManager.getUser();
+      if (!user) return;
+
+      const toastId = toast.loading('Initializing your property profile...');
+      
+      try {
+        // 1. Create the hotel profile first (obtains ID and sets initial template database paths)
+        const hotelId = await authManager.createHotel({
+          name,
+          location,
+          currency
+        });
+
+        if (!hotelId) throw new Error('Hotel creation failed');
+
+        // 2. Upload logo image to ImageKit if selected
+        if (selectedFile) {
+          toast.loading('Uploading logo to ImageKit...', { id: toastId });
+          try {
+            const uploadResult = await imageKit.upload(selectedFile, {
+              hotelId: hotelId,
+              folder: `/hotels/${hotelId}/logo/`
+            });
+            uploadedLogoUrl = uploadResult.url;
+          } catch (uploadErr) {
+            console.error('Logo upload failed, continuing without logo:', uploadErr);
+            toast.warning('Logo upload failed. You can add it later in Settings.');
+          }
+        }
+
+        // 3. Update extra hotel info fields
+        toast.loading('Saving details...', { id: toastId });
+        await db.update(`hotels/${hotelId}/info`, {
+          description: description,
+          phone: phone,
+          logo: uploadedLogoUrl
+        });
+
+        // 4. Update user defaultHotelId
+        await db.update(`users/${user.uid}`, {
+          defaultHotelId: hotelId
+        });
+
+        toast.dismiss(toastId);
+        toast.success('Property profile created successfully!');
+        
+        // Redirect to dashboard
+        navigateTo('dashboard.html');
+      } catch (err) {
+        toast.dismiss(toastId);
+        toast.error('Setup failed: ' + err.message);
+        console.error('Onboarding failed:', err);
+      }
+    }
+  </script>
+</body>
+</html>

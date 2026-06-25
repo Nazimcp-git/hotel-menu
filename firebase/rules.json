@@ -1,0 +1,54 @@
+{
+  "rules": {
+    "hotels": {
+      "$hotelId": {
+        ".read": "auth != null && root.child('users').child(auth.uid).child('hotelIds').child($hotelId).exists()",
+        ".write": "auth != null && root.child('hotels').child($hotelId).child('team').child(auth.uid).child('role').val() !== 'staff'",
+        "analytics": {
+          ".read": "auth != null && root.child('users').child(auth.uid).child('hotelIds').child($hotelId).exists()",
+          ".write": true
+        }
+      }
+    },
+    "users": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid",
+        "subscription": {
+          ".validate": "newData.hasChildren(['plan','paymentId','amount','currency','activatedAt','nonce'])",
+          "amount": { ".validate": "newData.val() === 9900" },
+          "currency": { ".validate": "newData.val() === 'INR'" },
+          "plan": { ".validate": "newData.val() === 'premium'" },
+          "paymentId": { ".validate": "newData.isString() && newData.val().length > 0" },
+          ".write": "auth != null && auth.uid === $uid && !data.exists()"
+        }
+      }
+    },
+    "payments": {
+      "$paymentId": {
+        ".read": "auth != null && data.child('userId').val() === auth.uid",
+        ".write": "auth != null && !data.exists()",
+        ".validate": "newData.hasChildren(['userId','amount','currency','nonce','createdAt'])"
+      }
+    },
+    "usedNonces": {
+      "$nonce": {
+        ".read": false,
+        ".write": "auth != null && !data.exists()",
+        ".validate": "newData.hasChildren(['paymentId','userId','usedAt'])"
+      }
+    },
+    "presence": {
+      "$menuId": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+    "publicMenus": {
+      "$menuId": {
+        ".read": true,
+        ".write": "auth != null"
+      }
+    }
+  }
+}
