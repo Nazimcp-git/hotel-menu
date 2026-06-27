@@ -137,6 +137,15 @@ class QRGenerator {
     const origin = window.location.origin;
     const pathname = window.location.pathname;
     const dir = pathname.substring(0, pathname.lastIndexOf('/'));
+    
+    if (hotelSlug) {
+      let baseDomain = 'menuforgee.vercel.app';
+      if (origin.includes('localhost')) {
+        return `http://${hotelSlug}.localhost:5500${dir}/preview.html?id=${menuId}&guest=true`;
+      }
+      return `https://${hotelSlug}.${baseDomain}${dir}/preview.html?id=${menuId}&guest=true`;
+    }
+    
     return `${origin}${dir}/preview.html?id=${menuId}&guest=true`;
   }
 

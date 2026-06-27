@@ -49,6 +49,12 @@
         ".read": true,
         ".write": "auth != null"
       }
+    },
+    "slugs": {
+      ".read": true,
+      "$slug": {
+        ".write": "auth != null && (newData.val() == null || root.child('users').child(auth.uid).child('hotelIds').child(newData.val()).exists()) && (!data.exists() || root.child('users').child(auth.uid).child('hotelIds').child(data.val()).exists())"
+      }
     }
   }
 }

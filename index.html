@@ -1522,6 +1522,35 @@
 </head>
 
 <body>
+  <script type="module">
+    // Helper to get hotel slug from subdomain
+    function getHotelSlugFromHostname() {
+      const hostname = window.location.hostname;
+      const baseDomain = 'menuforgee.vercel.app';
+      if (hostname.endsWith('.' + baseDomain)) {
+        return hostname.substring(0, hostname.length - baseDomain.length - 1);
+      }
+      if (hostname.includes('.localhost') || hostname.startsWith('127.0.0.1')) {
+        const parts = hostname.split('.');
+        if (parts.length > 1 && parts[0] !== 'www' && parts[0] !== 'localhost') {
+          return parts[0];
+        }
+      }
+      return null;
+    }
+
+    const hostSlug = getHotelSlugFromHostname();
+    if (hostSlug && hostSlug !== 'www') {
+      const params = new URLSearchParams(window.location.search);
+      const menuId = params.get('id');
+      if (menuId) {
+        window.location.href = `preview.html?id=${menuId}&guest=true`;
+      } else {
+        window.location.href = `preview.html?guest=true`;
+      }
+    }
+  </script>
+
   <!-- Aurora Background -->
   <div class="bg-aurora" aria-hidden="true">
     <div class="bg-aurora__orb bg-aurora__orb--1"></div>
@@ -1548,7 +1577,7 @@
         <li><a href="#showcase" class="nav__link">Examples</a></li>
         <li><a href="#pricing" class="nav__link">Pricing</a></li>
         <li><a href="#faq" class="nav__link">FAQ</a></li>
-        <li><a href="index.html" class="nav__login">Sign In</a></li>
+        <li><a href="login.html" class="nav__login">Sign In</a></li>
         <li>
           <button class="nav__cta" id="nav-get-started">
             Get Started — ₹99
@@ -2261,7 +2290,7 @@
       <div class="footer__links">
         <a href="#" class="footer__link">Privacy</a>
         <a href="#" class="footer__link">Terms</a>
-        <a href="index.html" class="footer__link">Sign In</a>
+        <a href="login.html" class="footer__link">Sign In</a>
       </div>
     </div>
   </footer>
@@ -2345,7 +2374,7 @@
 
     /* ── Redirect to Signup Flow ── */
     function handleSignupRedirect() {
-      window.location.href = 'index.html?signup=true';
+      window.location.href = 'login.html?signup=true';
     }
 
     // Bind all CTA buttons

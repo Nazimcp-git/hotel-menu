@@ -382,15 +382,33 @@
     import ExportManager from './js/preview/export.js';
     import QRGenerator from './js/preview/qr.js';
 
+    // Helper to get hotel slug from subdomain
+    function getHotelSlugFromHostname() {
+      const hostname = window.location.hostname;
+      const baseDomain = 'menuforgee.vercel.app';
+      if (hostname.endsWith('.' + baseDomain)) {
+        return hostname.substring(0, hostname.length - baseDomain.length - 1);
+      }
+      if (hostname.includes('.localhost') || hostname.startsWith('127.0.0.1')) {
+        const parts = hostname.split('.');
+        if (parts.length > 1 && parts[0] !== 'www' && parts[0] !== 'localhost') {
+          return parts[0];
+        }
+      }
+      return null;
+    }
+
+    const hostSlug = getHotelSlugFromHostname();
+
     // URL params
     const params = new URLSearchParams(window.location.search);
     const menuId = params.get('id');
-    const isGuest = params.get('guest') === 'true';
+    const isGuest = params.get('guest') === 'true' || !!hostSlug;
     const mode = params.get('mode'); // 'print', 'png'
     const autoPrint = params.get('auto') === 'true';
     const hotelIdParam = params.get('hotelId');
 
-    if (!menuId && !hotelIdParam) {
+    if (!menuId && !hotelIdParam && !hostSlug) {
       navigateTo('dashboard.html');
     }
 
@@ -401,6 +419,7 @@
     const renderer = new MenuRenderer();
     let menuData = null;
     let originalHtml = '';
+    let hotelSubdomain = hostSlug || '';
 
     function paginateMenu(container) {
       if (!container) return;
@@ -587,25 +606,43 @@
 
         menuData = data;
         
-        // Fetch hotel details to show in the splash screen
+        // Fetch hotel details to show in the splash screen and configure URLs
         const hotelId = data.meta?.hotelId || (isGuest ? null : state.get('currentHotelId'));
         if (hotelId) {
           const portalPath = isGuest ? `publicMenus/hotel_${hotelId}` : `hotels/${hotelId}/info`;
-          db.get(portalPath).then(info => {
+          try {
+            const info = await db.get(portalPath);
             if (info) {
+              hotelSubdomain = info.subdomain || info.hotelSubdomain || '';
               const mappedData = {
                 hotelName: info.hotelName || info.name || 'Our Property',
                 hotelLogo: info.hotelLogo || info.logo || null
               };
               updateSplashFromPortalData(mappedData);
             }
-          }).catch(err => console.error('Failed to prefetch hotel portal info for splash:', err));
+          } catch (err) {
+            console.error('Failed to prefetch hotel info:', err);
+          }
 
           // Configure admin portal link button
           if (!isGuest) {
             const portalBtn = document.getElementById('btn-go-to-portal');
             if (portalBtn) {
-              portalBtn.href = `preview.html?hotelId=${hotelId}&guest=true`;
+              let resolvedPortalUrl = '';
+              const origin = window.location.origin;
+              const pathname = window.location.pathname;
+              const dir = pathname.substring(0, pathname.lastIndexOf('/'));
+              if (hotelSubdomain) {
+                let baseDomain = 'menuforgee.vercel.app';
+                if (origin.includes('localhost')) {
+                  resolvedPortalUrl = `http://${hotelSubdomain}.localhost:5500${dir}/preview.html?guest=true`;
+                } else {
+                  resolvedPortalUrl = `https://${hotelSubdomain}.${baseDomain}${dir}/preview.html?guest=true`;
+                }
+              } else {
+                resolvedPortalUrl = `${origin}${dir}/preview.html?hotelId=${hotelId}&guest=true`;
+              }
+              portalBtn.href = resolvedPortalUrl;
               portalBtn.style.display = 'inline-flex';
             }
           }
@@ -624,7 +661,7 @@
           const qrPanel = document.getElementById('qr-panel');
           qrPanel.classList.remove('hidden');
 
-          const shareUrl = QRGenerator.buildMenuUrl(menuId);
+          const shareUrl = QRGenerator.buildMenuUrl(menuId, hotelSubdomain);
           document.getElementById('qr-url').textContent = shareUrl;
 
           await QRGenerator.renderTo(
@@ -805,12 +842,14 @@
         const portalData = await db.get(`publicMenus/hotel_${hotelId}`);
         if (!portalData) return;
 
+        const backHref = hostSlug ? 'preview.html?guest=true' : `preview.html?hotelId=${hotelId}&guest=true`;
+
         // Render back button to hotel portal
         const existingBack = document.querySelector('.guest-portal-back-btn');
         if (existingBack) existingBack.remove();
 
         const backBtn = document.createElement('a');
-        backBtn.href = `preview.html?hotelId=${hotelId}&guest=true`;
+        backBtn.href = backHref;
         backBtn.className = 'guest-portal-back-btn';
         backBtn.innerHTML = `
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-right:4px;"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
@@ -846,7 +885,7 @@
             <div class="guest-switcher-dropdown" id="guest-menu-dropdown-menu">
               ${dropdownItemsHtml}
               <div style="height:1px; background: rgba(255,255,255,0.1); margin: 4px 0;"></div>
-              <a href="preview.html?hotelId=${hotelId}&guest=true" class="guest-switcher-item" style="color: var(--accent); font-weight: 500;">
+              <a href="${backHref}" class="guest-switcher-item" style="color: var(--accent); font-weight: 500;">
                 <span>🏠 All Menus</span>
               </a>
             </div>
@@ -872,24 +911,61 @@
     }
 
     // Init
-    if (menuId) {
-      if (isGuest) {
-        loadMenu();
-      } else {
-        await initApp({
-          requiresAuth: true,
-          onReady: () => loadMenu()
-        });
+    if (hostSlug) {
+      try {
+        const resolvedHotelId = await db.get(`slugs/${hostSlug}`);
+        if (resolvedHotelId) {
+          if (menuId) {
+            loadMenu();
+          } else {
+            const portalData = await db.get(`publicMenus/hotel_${resolvedHotelId}`);
+            if (portalData) {
+              updateSplashFromPortalData(portalData);
+            }
+            loadHotelPortal(resolvedHotelId);
+          }
+        } else {
+          const container = document.getElementById('preview-container');
+          container.innerHTML = `
+            <div style="text-align:center; padding:48px 24px;">
+              <h2 style="font-size:24px;margin-bottom:8px; color: #FFF;">Property Not Found</h2>
+              <p style="color:var(--text-muted);">The subdomain "${hostSlug}" is not registered on MenuForge.</p>
+            </div>
+          `;
+          container.classList.remove('hidden');
+          if (window.hideSplashScreen) window.hideSplashScreen();
+        }
+      } catch (err) {
+        console.error('Failed to resolve subdomain:', err);
+        const container = document.getElementById('preview-container');
+        container.innerHTML = `
+          <div style="text-align:center; padding:48px 24px;">
+            <h2 style="font-size:24px;margin-bottom:8px; color: #FFF;">Error Loading Property</h2>
+            <p style="color:var(--text-muted);">${err.message}</p>
+          </div>
+        `;
+        container.classList.remove('hidden');
+        if (window.hideSplashScreen) window.hideSplashScreen();
       }
-    } else if (hotelIdParam) {
-      // Pre-load splash brand if hotelId is in URL
-      db.get(`publicMenus/hotel_${hotelIdParam}`).then(portalData => {
-        if (portalData) updateSplashFromPortalData(portalData);
-      }).catch(err => console.error('Failed to pre-load splash brand:', err));
-
-      loadHotelPortal(hotelIdParam);
     } else {
-      navigateTo('dashboard.html');
+      if (menuId) {
+        if (isGuest) {
+          loadMenu();
+        } else {
+          await initApp({
+            requiresAuth: true,
+            onReady: () => loadMenu()
+          });
+        }
+      } else if (hotelIdParam) {
+        db.get(`publicMenus/hotel_${hotelIdParam}`).then(portalData => {
+          if (portalData) updateSplashFromPortalData(portalData);
+        }).catch(err => console.error('Failed to pre-load splash brand:', err));
+
+        loadHotelPortal(hotelIdParam);
+      } else {
+        navigateTo('dashboard.html');
+      }
     }
 
     // ── Controls ──
@@ -926,12 +1002,12 @@
 
     // QR downloads
     document.getElementById('btn-download-qr')?.addEventListener('click', () => {
-      const url = QRGenerator.buildMenuUrl(menuId);
+      const url = QRGenerator.buildMenuUrl(menuId, hotelSubdomain);
       QRGenerator.download(url, `${menuData?.meta?.name || 'menu'}-qr.png`);
     });
 
     document.getElementById('btn-copy-link')?.addEventListener('click', async () => {
-      const url = QRGenerator.buildMenuUrl(menuId);
+      const url = QRGenerator.buildMenuUrl(menuId, hotelSubdomain);
       try {
         await navigator.clipboard.writeText(url);
         toast.success('Link copied to clipboard');

@@ -180,7 +180,7 @@ function navigateTo(page) {
 
 function requireAuth() {
   if (!authManager.isAuthenticated()) {
-    navigateTo('index.html');
+    navigateTo('login.html');
     return false;
   }
   return true;
@@ -372,12 +372,12 @@ async function showShareModal(menuId) {
     toast.error('Menu data not found');
     return;
   }
+  const hotelInfo = await db.get(`hotels/${hotelId}/info`) || {};
+  const subdomain = hotelInfo.subdomain || '';
 
   const isPublished = menuData.meta?.status === 'active';
-  const origin = window.location.origin;
-  const pathname = window.location.pathname;
-  const dir = pathname.substring(0, pathname.lastIndexOf('/'));
-  const shareUrl = `${origin}${dir}/preview.html?id=${menuId}&guest=true`;
+  const shareUrl = buildShareUrl(menuId, subdomain);
+  const portalUrl = buildPortalUrl(hotelId, subdomain);
 
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay modal-overlay--visible';
@@ -431,11 +431,11 @@ async function showShareModal(menuId) {
             A single link showing all active menus for your restaurant. Perfect for table QR codes!
           </div>
           <div style="display:flex; gap:var(--space-2); margin-top:2px;">
-            <input type="text" class="input" id="portal-link-input" readonly value="${origin}${dir}/preview.html?hotelId=${hotelId}&guest=true" style="font-size:var(--text-xs); background:var(--app-bg-subtle); flex:1;">
+            <input type="text" class="input" id="portal-link-input" readonly value="${portalUrl}" style="font-size:var(--text-xs); background:var(--app-bg-subtle); flex:1;">
             <button class="btn btn--secondary btn--sm" id="btn-portal-copy" style="height:34px; padding: 0 12px; min-width: 60px;">
               Copy
             </button>
-            <a href="${origin}${dir}/preview.html?hotelId=${hotelId}&guest=true" target="_blank" class="btn btn--primary btn--sm" style="height:34px; display:inline-flex; align-items:center; justify-content:center; text-decoration:none; padding: 0 12px;">
+            <a href="${portalUrl}" target="_blank" class="btn btn--primary btn--sm" style="height:34px; display:inline-flex; align-items:center; justify-content:center; text-decoration:none; padding: 0 12px;">
               Open
             </a>
           </div>
@@ -626,6 +626,7 @@ async function updateHotelPublicPortal(hotelId) {
         hotelName: hotelInfo.name || 'Our Property',
         hotelLogo: hotelInfo.logo || null,
         hotelAddress: hotelInfo.address || '',
+        subdomain: hotelInfo.subdomain || '',
         menus: activeMenus
       });
     } else {
@@ -651,7 +652,7 @@ async function initApp(options = {}) {
   const user = await authManager.init();
 
   if (requiresAuth && !user) {
-    navigateTo('index.html');
+    navigateTo('login.html');
     return;
   }
 
@@ -729,6 +730,38 @@ function hideSplashScreen() {
 }
 window.hideSplashScreen = hideSplashScreen;
 
+export function buildShareUrl(menuId, subdomain = '') {
+  const origin = window.location.origin;
+  const pathname = window.location.pathname;
+  const dir = pathname.substring(0, pathname.lastIndexOf('/'));
+  
+  if (subdomain) {
+    let baseDomain = 'menuforgee.vercel.app';
+    if (origin.includes('localhost')) {
+      return `http://${subdomain}.localhost:5500${dir}/preview.html?id=${menuId}&guest=true`;
+    }
+    return `https://${subdomain}.${baseDomain}${dir}/preview.html?id=${menuId}&guest=true`;
+  }
+  
+  return `${origin}${dir}/preview.html?id=${menuId}&guest=true`;
+}
+
+export function buildPortalUrl(hotelId, subdomain = '') {
+  const origin = window.location.origin;
+  const pathname = window.location.pathname;
+  const dir = pathname.substring(0, pathname.lastIndexOf('/'));
+  
+  if (subdomain) {
+    let baseDomain = 'menuforgee.vercel.app';
+    if (origin.includes('localhost')) {
+      return `http://${subdomain}.localhost:5500${dir}/preview.html?guest=true`;
+    }
+    return `https://${subdomain}.${baseDomain}${dir}/preview.html?guest=true`;
+  }
+  
+  return `${origin}${dir}/preview.html?hotelId=${hotelId}&guest=true`;
+}
+
 /* ── Exports ── */
 export { state, toast, initApp, renderTopNav, setTheme, toggleTheme, navigateTo, requireAuth, confirm, getPage, showShareModal, updateHotelPublicPortal };
-export default { state, toast, initApp, renderTopNav, setTheme, toggleTheme, navigateTo, requireAuth, confirm, getPage, showShareModal, updateHotelPublicPortal };
+export default { state, toast, initApp, renderTopNav, setTheme, toggleTheme, navigateTo, requireAuth, confirm, getPage, showShareModal, updateHotelPublicPortal, buildShareUrl, buildPortalUrl };

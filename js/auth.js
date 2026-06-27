@@ -18,6 +18,7 @@ import {
   updateProfile
 } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import db from './db.js';
+import { slugify } from './utils/helpers.js';
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -192,7 +193,7 @@ class AuthManager {
    */
   async sendMagicLink(email) {
     const actionCodeSettings = {
-      url: window.location.origin + '/index.html',
+      url: window.location.origin + '/login.html',
       handleCodeInApp: true
     };
 
@@ -344,9 +345,25 @@ class AuthManager {
 
     const hotelId = db.newKey('hotels');
 
+    // Auto-generate unique subdomain slug
+    const baseSlug = slugify(hotelData.name || 'hotel');
+    let subdomain = baseSlug;
+    let isTaken = true;
+    let counter = 0;
+    while (isTaken) {
+      const existing = await db.get(`slugs/${subdomain}`);
+      if (!existing) {
+        isTaken = false;
+      } else {
+        counter++;
+        subdomain = `${baseSlug}-${counter}`;
+      }
+    }
+
     const hotel = {
       info: {
         name: hotelData.name,
+        subdomain: subdomain,
         location: hotelData.location || '',
         timezone: hotelData.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
         logo: '',
@@ -367,6 +384,7 @@ class AuthManager {
       }
     };
 
+    await db.set(`slugs/${subdomain}`, hotelId);
     await db.set(`hotels/${hotelId}`, hotel);
     await db.update(`users/${this.currentUser.uid}/hotelIds`, {
       [hotelId]: true

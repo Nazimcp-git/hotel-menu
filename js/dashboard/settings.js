@@ -7,7 +7,7 @@ import db from '../db.js';
 import authManager from '../auth.js';
 import imageKit from '../imagekit.js';
 import { state, toast, confirm, initApp, renderTopNav, setTheme, navigateTo, updateHotelPublicPortal } from '../app.js';
-import { $ } from '../utils/helpers.js';
+import { $, slugify } from '../utils/helpers.js';
 import { t } from '../utils/i18n.js';
 
 class SettingsManager {
@@ -53,6 +53,7 @@ class SettingsManager {
   render() {
     // Populate form fields
     $('#prop-name').value = this.hotelInfo.name || '';
+    $('#prop-subdomain').value = this.hotelInfo.subdomain || '';
     $('#prop-location').value = this.hotelInfo.location || '';
     $('#prop-address').value = this.hotelInfo.address || '';
     $('#prop-contact').value = this.hotelInfo.contact || '';
@@ -191,6 +192,10 @@ class SettingsManager {
       btn.disabled = true;
       btn.textContent = 'Saving...';
 
+      const newSubdomainInput = $('#prop-subdomain').value.trim().toLowerCase();
+      const newSubdomain = slugify(newSubdomainInput);
+      const oldSubdomain = this.hotelInfo.subdomain || '';
+
       const updateData = {
         name: $('#prop-name').value.trim(),
         location: $('#prop-location').value.trim(),
@@ -203,7 +208,40 @@ class SettingsManager {
       };
 
       try {
+        if (newSubdomain !== oldSubdomain) {
+          const reserved = ['www', 'admin', 'api', 'menuforgee', 'login', 'dashboard', 'settings', 'preview', 'editor'];
+          if (reserved.includes(newSubdomain)) {
+            toast.error('This subdomain is reserved. Please choose another one.');
+            btn.disabled = false;
+            btn.textContent = 'Save Changes';
+            return;
+          }
+          if (newSubdomain.length < 3) {
+            toast.error('Subdomain must be at least 3 characters.');
+            btn.disabled = false;
+            btn.textContent = 'Save Changes';
+            return;
+          }
+
+          const existingHotelId = await db.get(`slugs/${newSubdomain}`);
+          if (existingHotelId && existingHotelId !== this.hotelId) {
+            toast.error('This subdomain is already in use. Please choose another one.');
+            btn.disabled = false;
+            btn.textContent = 'Save Changes';
+            return;
+          }
+
+          if (oldSubdomain) {
+            await db.delete(`slugs/${oldSubdomain}`);
+          }
+          await db.set(`slugs/${newSubdomain}`, this.hotelId);
+          updateData.subdomain = newSubdomain;
+        } else {
+          updateData.subdomain = oldSubdomain;
+        }
+
         await db.update(`hotels/${this.hotelId}/info`, updateData);
+        this.hotelInfo = { ...this.hotelInfo, ...updateData };
         state.set('currentHotel', { ...state.get('currentHotel'), ...updateData });
         await updateHotelPublicPortal(this.hotelId);
         toast.success('Property settings saved successfully');
