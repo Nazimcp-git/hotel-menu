@@ -345,18 +345,22 @@ class AuthManager {
 
     const hotelId = db.newKey('hotels');
 
-    // Auto-generate unique subdomain slug
-    const baseSlug = slugify(hotelData.name || 'hotel');
-    let subdomain = baseSlug;
-    let isTaken = true;
-    let counter = 0;
-    while (isTaken) {
-      const existing = await db.get(`slugs/${subdomain}`);
-      if (!existing) {
-        isTaken = false;
-      } else {
-        counter++;
-        subdomain = `${baseSlug}-${counter}`;
+    let subdomain = hotelData.subdomain;
+
+    if (!subdomain) {
+      // Auto-generate unique subdomain slug
+      const baseSlug = slugify(hotelData.name || 'hotel');
+      subdomain = baseSlug;
+      let isTaken = true;
+      let counter = 0;
+      while (isTaken) {
+        const existing = await db.get(`slugs/${subdomain}`);
+        if (!existing) {
+          isTaken = false;
+        } else {
+          counter++;
+          subdomain = `${baseSlug}-${counter}`;
+        }
       }
     }
 

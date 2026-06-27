@@ -282,6 +282,14 @@
               <label class="input-label input-label--required" for="ob-hotel-name">Property Name</label>
               <input type="text" class="input input--lg" id="ob-hotel-name" placeholder="e.g., Grand Hotel Lisboa" required>
             </div>
+            <div class="input-group mb-4">
+              <label class="input-label input-label--required" for="ob-hotel-subdomain">Subdomain</label>
+              <div style="display:flex; align-items:center;">
+                <input type="text" class="input" id="ob-hotel-subdomain" required placeholder="e.g., grandhotel" style="text-align:right; border-top-right-radius:0; border-bottom-right-radius:0; padding-right:8px; height:40px; flex:1; box-sizing:border-box;">
+                <span style="background:var(--app-bg-subtle); border:1px solid var(--border); border-left:none; height:40px; display:inline-flex; align-items:center; padding:0 var(--space-3); font-size:var(--text-xs); color:var(--text-secondary); border-top-right-radius:var(--radius-md); border-bottom-right-radius:var(--radius-md); white-space:nowrap; box-sizing:border-box;">.menuforgee.vercel.app</span>
+              </div>
+              <div id="ob-subdomain-status" style="font-size:12px; margin-top:4px; display:none;"></div>
+            </div>
             <div class="input-group">
               <label class="input-label" for="ob-hotel-desc">Property Description / Slogan</label>
               <textarea class="input" id="ob-hotel-desc" rows="3" placeholder="e.g., Authentic Mediterranean dining by the sea..."></textarea>
@@ -347,6 +355,7 @@
     import authManager from './js/auth.js';
     import db from './js/db.js';
     import imageKit from './js/imagekit.js';
+    import { slugify } from './js/utils/helpers.js';
 
     let currentStep = 1;
     const totalSteps = 3;
@@ -371,6 +380,68 @@
     const removeLogoBtn = document.getElementById('btn-remove-ob-logo');
     const uploadPrompt = document.getElementById('upload-zone-prompt');
 
+    const obNameInput = document.getElementById('ob-hotel-name');
+    const obSubdomainInput = document.getElementById('ob-hotel-subdomain');
+    const obSubdomainStatus = document.getElementById('ob-subdomain-status');
+    let hasManuallyEditedSubdomain = false;
+    let obCheckTimeout;
+
+    obSubdomainInput.addEventListener('focus', () => {
+      hasManuallyEditedSubdomain = true;
+    });
+
+    obNameInput.addEventListener('input', () => {
+      if (!hasManuallyEditedSubdomain) {
+        obSubdomainInput.value = slugify(obNameInput.value.trim().toLowerCase());
+        triggerSubdomainCheck();
+      }
+    });
+
+    obSubdomainInput.addEventListener('input', () => {
+      triggerSubdomainCheck();
+    });
+
+    function triggerSubdomainCheck() {
+      clearTimeout(obCheckTimeout);
+      const val = slugify(obSubdomainInput.value.trim().toLowerCase());
+      
+      if (!val) {
+        obSubdomainStatus.style.display = 'none';
+        return;
+      }
+      
+      obSubdomainStatus.style.display = 'block';
+      obSubdomainStatus.style.color = 'var(--text-muted)';
+      obSubdomainStatus.textContent = 'Checking availability...';
+
+      obCheckTimeout = setTimeout(async () => {
+        const reserved = ['www', 'admin', 'api', 'menuforgee', 'login', 'dashboard', 'settings', 'preview', 'editor'];
+        if (reserved.includes(val)) {
+          obSubdomainStatus.style.color = '#ef4444';
+          obSubdomainStatus.textContent = '❌ Reserved subdomain';
+          return;
+        }
+        if (val.length < 3) {
+          obSubdomainStatus.style.color = '#ef4444';
+          obSubdomainStatus.textContent = '❌ Must be at least 3 characters';
+          return;
+        }
+
+        try {
+          const existingHotelId = await db.get(`slugs/${val}`);
+          if (existingHotelId) {
+            obSubdomainStatus.style.color = '#ef4444';
+            obSubdomainStatus.textContent = '❌ Already in use';
+          } else {
+            obSubdomainStatus.style.color = '#22c55e';
+            obSubdomainStatus.textContent = '✅ Available';
+          }
+        } catch (err) {
+          obSubdomainStatus.style.display = 'none';
+        }
+      }, 500);
+    }
+
     function updateStepIndicator() {
       document.querySelectorAll('.onboarding-step-indicator').forEach((el, index) => {
         const step = index + 1;
@@ -393,6 +464,37 @@
         const name = document.getElementById('ob-hotel-name').value.trim();
         if (!name) {
           toast.warning('Please enter a property name');
+          return;
+        }
+
+        const subdomain = slugify(document.getElementById('ob-hotel-subdomain').value.trim().toLowerCase());
+        if (!subdomain) {
+          toast.warning('Please enter a subdomain');
+          return;
+        }
+
+        const reserved = ['www', 'admin', 'api', 'menuforgee', 'login', 'dashboard', 'settings', 'preview', 'editor'];
+        if (reserved.includes(subdomain)) {
+          toast.error('This subdomain is reserved. Please choose another.');
+          return;
+        }
+
+        if (subdomain.length < 3) {
+          toast.error('Subdomain must be at least 3 characters.');
+          return;
+        }
+
+        const checkToast = toast.loading('Checking subdomain availability...');
+        try {
+          const existing = await db.get(`slugs/${subdomain}`);
+          toast.dismiss(checkToast);
+          if (existing) {
+            toast.error('This subdomain is already in use. Please choose another.');
+            return;
+          }
+        } catch (err) {
+          toast.dismiss(checkToast);
+          toast.error('Failed to verify subdomain availability. Please try again.');
           return;
         }
       }
@@ -463,6 +565,7 @@
     // Complete Onboarding
     async function completeOnboarding() {
       const name = document.getElementById('ob-hotel-name').value.trim();
+      const subdomain = slugify(document.getElementById('ob-hotel-subdomain').value.trim().toLowerCase());
       const description = document.getElementById('ob-hotel-desc').value.trim();
       const location = document.getElementById('ob-hotel-location').value.trim();
       const phone = document.getElementById('ob-hotel-phone').value.trim();
@@ -477,6 +580,7 @@
         // 1. Create the hotel profile first (obtains ID and sets initial template database paths)
         const hotelId = await authManager.createHotel({
           name,
+          subdomain,
           location,
           currency
         });

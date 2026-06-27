@@ -178,6 +178,57 @@ class SettingsManager {
       });
     });
 
+    // Subdomain Availability Check
+    const subdomainInput = $('#prop-subdomain');
+    if (subdomainInput) {
+      const subdomainStatus = document.createElement('div');
+      subdomainStatus.id = 'subdomain-status';
+      subdomainStatus.style.cssText = 'font-size: var(--text-xs); margin-top: 4px; display: none;';
+      subdomainInput.parentElement.parentElement.appendChild(subdomainStatus);
+
+      let checkTimeout;
+      subdomainInput.addEventListener('input', () => {
+        clearTimeout(checkTimeout);
+        const val = slugify(subdomainInput.value.trim().toLowerCase());
+        
+        if (!val) {
+          subdomainStatus.style.display = 'none';
+          return;
+        }
+        
+        subdomainStatus.style.display = 'block';
+        subdomainStatus.style.color = 'var(--text-secondary)';
+        subdomainStatus.textContent = 'Checking availability...';
+
+        checkTimeout = setTimeout(async () => {
+          const reserved = ['www', 'admin', 'api', 'menuforgee', 'login', 'dashboard', 'settings', 'preview', 'editor'];
+          if (reserved.includes(val)) {
+            subdomainStatus.style.color = '#ef4444';
+            subdomainStatus.textContent = '❌ Reserved subdomain';
+            return;
+          }
+          if (val.length < 3) {
+            subdomainStatus.style.color = '#ef4444';
+            subdomainStatus.textContent = '❌ Must be at least 3 characters';
+            return;
+          }
+
+          try {
+            const existingHotelId = await db.get(`slugs/${val}`);
+            if (existingHotelId && existingHotelId !== this.hotelId) {
+              subdomainStatus.style.color = '#ef4444';
+              subdomainStatus.textContent = '❌ Already in use';
+            } else {
+              subdomainStatus.style.color = '#22c55e';
+              subdomainStatus.textContent = '✅ Available';
+            }
+          } catch (err) {
+            subdomainStatus.style.display = 'none';
+          }
+        }, 500);
+      });
+    }
+
     // Save Brand Info
     $('#brand-form')?.addEventListener('submit', async (e) => {
       e.preventDefault();
