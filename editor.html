@@ -132,6 +132,11 @@
         <div class="canvas-toolbar__separator" style="height:24px;width:1px;background:var(--border);margin:0 4px;">
         </div>
 
+        <div style="display:flex;background:var(--app-bg-subtle);border:1px solid var(--border);border-radius:var(--radius-md);padding:2px;gap:2px;margin-right:8px;" id="layout-mode-selector">
+          <button class="btn btn--xs btn--active" id="layout-mode-structured" style="font-size:10px;padding:4px 8px;border-radius:4px;" title="Structured column layout">Grid</button>
+          <button class="btn btn--xs btn--ghost" id="layout-mode-freeform" style="font-size:10px;padding:4px 8px;border-radius:4px;" title="Photoshop/Figma canvas mode">Canvas</button>
+        </div>
+
         <button class="btn btn--ghost btn--sm" id="btn-preview" data-tooltip="Preview (Ctrl+P)">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
             <path d="M1 7s2.5-5 6-5 6 5 6 5-2.5 5-6 5-6-5-6-5z" stroke="currentColor" stroke-width="1.3" />
@@ -279,6 +284,10 @@
             </svg>
             Design
           </button>
+          <button class="editor-left__tab" data-tab="layers" id="tab-layers-btn" role="tab" aria-selected="false">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Layers
+          </button>
         </div>
 
         <div class="editor-left__content">
@@ -292,6 +301,41 @@
           <!-- Elements Tab -->
           <div class="tab-panel" id="left-tab-elements">
             <div class="section-palette">
+              <!-- Freeform Canvas Elements Section -->
+              <div class="prop-section__title" style="grid-column: 1/-1; margin: 8px 4px 4px; font-size: 10px; color: var(--text-muted);">Freeform Canvas Layers</div>
+              
+              <div class="section-palette__item" data-element="freeform-text" draggable="true">
+                <div class="section-palette__item-icon">📝</div>
+                <div class="section-palette__item-info">
+                  <div class="section-palette__item-name">Add Text Box</div>
+                  <div class="section-palette__item-desc">Absolute positioned rich text</div>
+                </div>
+              </div>
+              <div class="section-palette__item" data-element="freeform-image" draggable="true">
+                <div class="section-palette__item-icon">🖼️</div>
+                <div class="section-palette__item-info">
+                  <div class="section-palette__item-name">Add Image Frame</div>
+                  <div class="section-palette__item-desc">Custom sized image box</div>
+                </div>
+              </div>
+              <div class="section-palette__item" data-element="freeform-rect" draggable="true">
+                <div class="section-palette__item-icon">🟩</div>
+                <div class="section-palette__item-info">
+                  <div class="section-palette__item-name">Add Card / Shape</div>
+                  <div class="section-palette__item-desc">Rectangle/Circle backgrounds</div>
+                </div>
+              </div>
+              <div class="section-palette__item" data-element="freeform-item" draggable="true">
+                <div class="section-palette__item-icon">🍔</div>
+                <div class="section-palette__item-info">
+                  <div class="section-palette__item-name">Menu Item Link</div>
+                  <div class="section-palette__item-desc">Position dynamic menu item</div>
+                </div>
+              </div>
+
+              <!-- Structured Page Elements Section -->
+              <div class="prop-section__title" style="grid-column: 1/-1; margin: 16px 4px 4px; font-size: 10px; color: var(--text-muted);">Structured Page Elements</div>
+
               <div class="section-palette__item" data-element="image" draggable="true">
                 <div class="section-palette__item-icon">
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -362,6 +406,33 @@
                   <div class="section-palette__item-desc">Embed QR code in menu</div>
                 </div>
               </div>
+              <div class="section-palette__item" data-element="cta-button" draggable="true">
+                <div class="section-palette__item-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="8" rx="3"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                </div>
+                <div class="section-palette__item-info">
+                  <div class="section-palette__item-name">CTA Button</div>
+                  <div class="section-palette__item-desc">Call-to-action / link button</div>
+                </div>
+              </div>
+              <div class="section-palette__item" data-element="social-links" draggable="true">
+                <div class="section-palette__item-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                </div>
+                <div class="section-palette__item-info">
+                  <div class="section-palette__item-name">Social Links</div>
+                  <div class="section-palette__item-desc">Instagram, Facebook, etc.</div>
+                </div>
+              </div>
+              <div class="section-palette__item" data-element="divider" draggable="true">
+                <div class="section-palette__item-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/></svg>
+                </div>
+                <div class="section-palette__item-info">
+                  <div class="section-palette__item-name">Divider</div>
+                  <div class="section-palette__item-desc">Horizontal rule / spacer</div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -389,6 +460,13 @@
           <!-- Design Tab -->
           <div class="tab-panel" id="left-tab-design">
             <div id="design-panel">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <!-- Layers Tab -->
+          <div class="tab-panel" id="left-tab-layers">
+            <div class="layers-list-panel" id="layers-list-panel" style="padding:16px;">
               <!-- Populated by JS -->
             </div>
           </div>
@@ -481,6 +559,7 @@
     import DesignManager from './js/editor/design.js';
     import HistoryManager from './js/editor/history.js';
     import ShortcutManager from './js/editor/shortcuts.js';
+    import FreeformManager from './js/editor/freeform.js';
 
     // Get menu ID from URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -494,6 +573,7 @@
     const editorState = {
       menuId,
       sections: {},
+      freeformElements: {},
       design: {},
       meta: {},
       primaryLanguage: 'en',
@@ -508,6 +588,7 @@
     const items = new ItemsManager(editorState);
     const design = new DesignManager(editorState);
     let canvas;
+    let freeform;
 
     // Auto-save
     let saveTimer = null;
@@ -555,8 +636,9 @@
             return;
           }
 
-          editorState.sections = data.sections || {};
+           editorState.sections = data.sections || {};
           editorState.design = data.design || {};
+          editorState.freeformElements = data.freeformElements || {};
           editorState.meta = data.meta || {};
           editorState.primaryLanguage = data.meta?.primaryLanguage || 'en';
           editorState.currency = data.meta?.currency || 'USD';
@@ -565,6 +647,60 @@
           // Update UI
           document.getElementById('menu-name-input').value = data.meta?.name || 'Untitled Menu';
           document.title = `${data.meta?.name || 'Untitled'} — MenuForge Editor`;
+
+          // Layout Mode selector state
+          const mode = data.design?.layoutMode || 'structured';
+          const structBtn = document.getElementById('layout-mode-structured');
+          const freeBtn = document.getElementById('layout-mode-freeform');
+          if (structBtn && freeBtn) {
+            structBtn.classList.toggle('btn--active', mode === 'structured');
+            structBtn.classList.toggle('btn--ghost', mode !== 'structured');
+            freeBtn.classList.toggle('btn--active', mode === 'freeform');
+            freeBtn.classList.toggle('btn--ghost', mode !== 'freeform');
+          }
+
+          // Show/hide relevant tab buttons based on mode
+          const sectionsTabBtn = document.querySelector('.editor-left__tab[data-tab="sections"]');
+          const layersTabBtn = document.getElementById('tab-layers-btn');
+          if (sectionsTabBtn) {
+            sectionsTabBtn.style.display = mode === 'structured' ? '' : 'none';
+          }
+          if (layersTabBtn) {
+            layersTabBtn.style.display = mode === 'freeform' ? '' : 'none';
+          }
+
+          // Fallback active tab redirect
+          const activeTabBtn = document.querySelector('.editor-left__tab--active');
+          if (activeTabBtn && activeTabBtn.style.display === 'none') {
+            const fallbackTab = mode === 'structured' ? sectionsTabBtn : layersTabBtn;
+            if (fallbackTab) fallbackTab.click();
+          }
+
+          // Toggle element categories inside Elements tab panel
+          const elementsPanel = document.getElementById('left-tab-elements');
+          if (elementsPanel) {
+            const freeformTitle = elementsPanel.querySelector('.prop-section__title:nth-of-type(1)');
+            const structuredTitle = elementsPanel.querySelector('.prop-section__title:nth-of-type(2)');
+            
+            elementsPanel.querySelectorAll('.section-palette__item').forEach(item => {
+              const element = item.dataset.element;
+              const isFreeform = element && element.startsWith('freeform-');
+              if (mode === 'freeform') {
+                item.style.display = isFreeform ? '' : 'none';
+              } else {
+                item.style.display = isFreeform ? 'none' : '';
+              }
+            });
+
+            if (freeformTitle) freeformTitle.style.display = mode === 'freeform' ? '' : 'none';
+            if (structuredTitle) structuredTitle.style.display = mode === 'structured' ? '' : 'none';
+          }
+
+          // If in freeform mode, render layers panel list
+          const layersListPanel = document.getElementById('layers-list-panel');
+          if (layersListPanel && freeform && mode === 'freeform') {
+            freeform.renderLayersTab(layersListPanel);
+          }
 
           // Update right panel settings
           const nameInput = document.getElementById('menu-settings-name');
@@ -619,7 +755,7 @@
           if (canvas) canvas.render();
 
           // Push to history
-          history.push({ sections: editorState.sections, design: editorState.design });
+          history.push({ sections: editorState.sections, freeformElements: editorState.freeformElements, design: editorState.design });
         });
 
         // Initialize canvas
@@ -705,6 +841,22 @@
         window.canvas = canvas;
         canvas.init(document.getElementById('canvas'));
 
+        // Initialize Freeform Manager
+        freeform = new FreeformManager(editorState, canvas);
+        window.freeform = freeform;
+
+        // Bind layout mode selector clicks
+        document.getElementById('layout-mode-structured')?.addEventListener('click', async () => {
+          const hotelId = state.get('currentHotelId');
+          await db.update(`hotels/${hotelId}/menus/${menuId}/design`, { layoutMode: 'structured' });
+          canvas.deselect();
+        });
+        document.getElementById('layout-mode-freeform')?.addEventListener('click', async () => {
+          const hotelId = state.get('currentHotelId');
+          await db.update(`hotels/${hotelId}/menus/${menuId}/design`, { layoutMode: 'freeform' });
+          canvas.deselect();
+        });
+
         // Initialize sections palette
         sections.renderPalette(document.getElementById('section-palette'));
 
@@ -737,6 +889,16 @@
         async function applyElementToSelected(element) {
           const activeSectionId = canvas?.selectedSectionId;
           const activeItemId = canvas?.selectedItemId;
+
+          if (element.startsWith('freeform-')) {
+            const type = element.substring(9); // e.g. "text", "image", "rect", "item"
+            if (type === 'rect') {
+              await freeform.addElement('shape', { shapeType: 'rectangle' });
+            } else {
+              await freeform.addElement(type);
+            }
+            return;
+          }
 
           if (element === 'divider') {
             await sections.addSection('spacer');
@@ -870,6 +1032,9 @@
         // Refresh design panel if switching to it
         if (tab.dataset.tab === 'design') {
           design.renderDesignPanel(document.getElementById('design-panel'));
+        }
+        if (tab.dataset.tab === 'layers' && freeform) {
+          freeform.renderLayersTab(document.getElementById('layers-list-panel'));
         }
       });
     });
@@ -1189,6 +1354,149 @@
       }
 
       const lang = editorState.primaryLanguage || 'en';
+      const hotelId = state.get('currentHotelId');
+      const sectionPath = `hotels/${hotelId}/menus/${menuId}/sections/${sectionId}`;
+
+      // ── CTA Button section ──
+      if (section.type === 'cta-button') {
+        content.innerHTML = `
+          <div class="prop-section">
+            <div class="prop-section__title">CTA Button</div>
+            <div class="prop-row">
+              <label class="prop-label">Button Text</label>
+              <input type="text" class="input" id="cta-text" value="${section.ctaText || 'Order Now'}">
+            </div>
+            <div class="prop-row">
+              <label class="prop-label">Link URL</label>
+              <input type="url" class="input" id="cta-url" value="${section.ctaUrl || ''}" placeholder="https://...">
+            </div>
+            <div class="prop-row">
+              <label class="prop-label">Button Style</label>
+              <select class="input" id="cta-style">
+                <option value="filled" ${section.ctaStyle === 'filled' || !section.ctaStyle ? 'selected' : ''}>Filled</option>
+                <option value="outlined" ${section.ctaStyle === 'outlined' ? 'selected' : ''}>Outlined</option>
+                <option value="ghost" ${section.ctaStyle === 'ghost' ? 'selected' : ''}>Ghost</option>
+              </select>
+            </div>
+            <div class="prop-row">
+              <label class="prop-label">Alignment</label>
+              <select class="input" id="cta-align">
+                <option value="left" ${section.ctaAlign === 'left' ? 'selected' : ''}>Left</option>
+                <option value="center" ${section.ctaAlign === 'center' || !section.ctaAlign ? 'selected' : ''}>Center</option>
+                <option value="right" ${section.ctaAlign === 'right' ? 'selected' : ''}>Right</option>
+              </select>
+            </div>
+          </div>
+          <div class="prop-section">
+            <div class="prop-section__title">Visibility</div>
+            <div class="prop-row prop-row--inline">
+              <span class="prop-label">Visible</span>
+              <label class="toggle"><input type="checkbox" class="toggle__input" id="section-visible" ${section.visible !== false ? 'checked' : ''}><span class="toggle__slider"></span></label>
+            </div>
+          </div>
+        `;
+
+        content.querySelector('#cta-text')?.addEventListener('input', debounce(() => {
+          db.update(sectionPath, { ctaText: content.querySelector('#cta-text').value });
+        }, 500));
+        content.querySelector('#cta-url')?.addEventListener('input', debounce(() => {
+          db.update(sectionPath, { ctaUrl: content.querySelector('#cta-url').value });
+        }, 500));
+        content.querySelector('#cta-style')?.addEventListener('change', (e) => {
+          db.update(sectionPath, { ctaStyle: e.target.value });
+        });
+        content.querySelector('#cta-align')?.addEventListener('change', (e) => {
+          db.update(sectionPath, { ctaAlign: e.target.value });
+        });
+        content.querySelector('#section-visible')?.addEventListener('change', () => {
+          db.update(sectionPath, { visible: content.querySelector('#section-visible').checked });
+        });
+        return;
+      }
+
+      // ── Social Links section ──
+      if (section.type === 'social-links') {
+        const socials = section.socialLinks || [];
+        const platforms = ['instagram', 'facebook', 'twitter', 'whatsapp', 'tiktok', 'youtube', 'website'];
+        content.innerHTML = `
+          <div class="prop-section">
+            <div class="prop-section__title">Social Links</div>
+            <div id="social-links-list">
+              ${socials.map((s, i) => `
+                <div class="prop-row" style="display:flex;gap:4px;align-items:center;" data-index="${i}">
+                  <select class="input" style="width:90px;font-size:11px;" data-field="platform" data-idx="${i}">
+                    ${platforms.map(p => `<option value="${p}" ${s.platform === p ? 'selected' : ''}>${p.charAt(0).toUpperCase() + p.slice(1)}</option>`).join('')}
+                  </select>
+                  <input type="url" class="input" style="flex:1;font-size:11px;" data-field="url" data-idx="${i}" value="${s.url || ''}" placeholder="https://...">
+                  <button class="btn btn--icon btn--sm btn--ghost" data-action="remove-social" data-idx="${i}" title="Remove" style="flex-shrink:0;color:var(--danger);">✕</button>
+                </div>
+              `).join('')}
+            </div>
+            <button class="btn btn--sm btn--ghost btn--block" id="add-social-link" style="margin-top:8px;">+ Add Social Link</button>
+          </div>
+          <div class="prop-section">
+            <div class="prop-section__title">Alignment</div>
+            <div class="prop-row">
+              <select class="input" id="social-align">
+                <option value="left" ${section.socialAlign === 'left' ? 'selected' : ''}>Left</option>
+                <option value="center" ${section.socialAlign === 'center' || !section.socialAlign ? 'selected' : ''}>Center</option>
+                <option value="right" ${section.socialAlign === 'right' ? 'selected' : ''}>Right</option>
+              </select>
+            </div>
+          </div>
+          <div class="prop-section">
+            <div class="prop-section__title">Visibility</div>
+            <div class="prop-row prop-row--inline">
+              <span class="prop-label">Visible</span>
+              <label class="toggle"><input type="checkbox" class="toggle__input" id="section-visible" ${section.visible !== false ? 'checked' : ''}><span class="toggle__slider"></span></label>
+            </div>
+          </div>
+        `;
+
+        // Update a social link field
+        function updateSocials(updatedList) {
+          db.update(sectionPath, { socialLinks: updatedList });
+        }
+
+        content.querySelectorAll('[data-field="platform"]').forEach(sel => {
+          sel.addEventListener('change', () => {
+            const idx = parseInt(sel.dataset.idx);
+            socials[idx].platform = sel.value;
+            updateSocials([...socials]);
+          });
+        });
+        content.querySelectorAll('[data-field="url"]').forEach(inp => {
+          inp.addEventListener('input', debounce(() => {
+            const idx = parseInt(inp.dataset.idx);
+            socials[idx].url = inp.value;
+            updateSocials([...socials]);
+          }, 500));
+        });
+        content.querySelectorAll('[data-action="remove-social"]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const idx = parseInt(btn.dataset.idx);
+            socials.splice(idx, 1);
+            updateSocials([...socials]);
+            // Re-render right panel
+            setTimeout(() => renderSectionProperties(sectionId), 200);
+          });
+        });
+        content.querySelector('#add-social-link')?.addEventListener('click', () => {
+          socials.push({ platform: 'instagram', url: '' });
+          updateSocials([...socials]);
+          setTimeout(() => renderSectionProperties(sectionId), 200);
+        });
+        content.querySelector('#social-align')?.addEventListener('change', (e) => {
+          db.update(sectionPath, { socialAlign: e.target.value });
+        });
+        content.querySelector('#section-visible')?.addEventListener('change', () => {
+          db.update(sectionPath, { visible: content.querySelector('#section-visible').checked });
+        });
+        return;
+      }
+
+      // ── Standard section (category, header, etc.) ──
+      const layout = section.layout || {};
 
       content.innerHTML = `
         <div class="prop-section">
@@ -1209,6 +1517,23 @@
           ` : ''}
         </div>
         <div class="prop-section">
+          <div class="prop-section__title">Layout</div>
+          <div class="prop-row">
+            <label class="prop-label">Columns</label>
+            <div style="display:flex;gap:4px;">
+              ${[1,2,3].map(n => `
+                <button class="btn btn--xs ${(layout.columns || 1) === n ? 'btn--active' : 'btn--ghost'}" data-cols="${n}" style="flex:1;padding:6px 0;">
+                  ${n}-col
+                </button>
+              `).join('')}
+            </div>
+          </div>
+          <div class="prop-row">
+            <label class="prop-label">CSS Class <span style="font-size:10px;color:var(--text-muted);">(advanced)</span></label>
+            <input type="text" class="input" id="section-css-class" value="${layout.cssClass || ''}" placeholder="e.g. my-custom-section" style="font-size:11px;">
+          </div>
+        </div>
+        <div class="prop-section">
           <div class="prop-section__title">Visibility</div>
           <div class="prop-row prop-row--inline">
             <span class="prop-label">Visible</span>
@@ -1224,27 +1549,45 @@
       `;
 
       // Bind
-      const hotelId = state.get('currentHotelId');
       const titleInput = content.querySelector('#section-title');
       titleInput?.addEventListener('input', debounce(() => {
-        db.update(`hotels/${hotelId}/menus/${menuId}/sections/${sectionId}/header/title`, { [lang]: titleInput.value });
+        db.update(`${sectionPath}/header/title`, { [lang]: titleInput.value });
       }, 500));
 
       const subtitleInput = content.querySelector('#section-subtitle');
       subtitleInput?.addEventListener('input', debounce(() => {
-        db.update(`hotels/${hotelId}/menus/${menuId}/sections/${sectionId}/header/subtitle`, { [lang]: subtitleInput.value });
+        db.update(`${sectionPath}/header/subtitle`, { [lang]: subtitleInput.value });
       }, 500));
 
       if (section.type === 'textBlock') {
         const contentTextarea = content.querySelector('#section-content');
         contentTextarea?.addEventListener('input', debounce(() => {
-          db.update(`hotels/${hotelId}/menus/${menuId}/sections/${sectionId}/content`, { [lang]: contentTextarea.value });
+          db.update(`${sectionPath}/content`, { [lang]: contentTextarea.value });
         }, 500));
       }
 
+      // Columns picker
+      content.querySelectorAll('[data-cols]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const cols = parseInt(btn.dataset.cols);
+          db.update(`${sectionPath}/layout`, { columns: cols });
+          // Update button states immediately
+          content.querySelectorAll('[data-cols]').forEach(b => {
+            b.classList.toggle('btn--active', parseInt(b.dataset.cols) === cols);
+            b.classList.toggle('btn--ghost', parseInt(b.dataset.cols) !== cols);
+          });
+        });
+      });
+
+      // CSS Class
+      const cssClassInput = content.querySelector('#section-css-class');
+      cssClassInput?.addEventListener('input', debounce(() => {
+        db.update(`${sectionPath}/layout`, { cssClass: cssClassInput.value.trim() });
+      }, 500));
+
       const visibleToggle = content.querySelector('#section-visible');
       visibleToggle?.addEventListener('change', () => {
-        db.update(`hotels/${hotelId}/menus/${menuId}/sections/${sectionId}`, { visible: visibleToggle.checked });
+        db.update(sectionPath, { visible: visibleToggle.checked });
       });
 
       content.querySelector('#add-item-to-section')?.addEventListener('click', async () => {

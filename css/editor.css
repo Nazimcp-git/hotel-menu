@@ -339,6 +339,45 @@
   min-height: 800px;
 }
 
+/* Mobile device frame wrapper */
+.canvas-mobile-frame {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 32px;
+}
+
+.canvas-page--mobile {
+  width: 375px !important;
+  min-height: 667px !important;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 24px;
+  box-shadow:
+    0 0 0 6px #1a1a2e,
+    0 0 0 8px #333,
+    0 12px 40px rgba(0,0,0,0.3);
+  position: relative;
+}
+
+.canvas-page--mobile::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.15);
+  z-index: 10;
+}
+
+.canvas-page--mobile .menu-preview {
+  border-radius: 24px;
+  overflow: hidden;
+}
+
 /* Canvas safe area (print margins) */
 .canvas-safe-area {
   position: absolute;
@@ -701,3 +740,144 @@
     transform: translateX(0);
   }
 }
+
+/* ── FREEFORM CANVAS STYLES ── */
+.canvas-page--freeform {
+  width: 800px !important;
+  height: 1130px !important;
+  min-height: 1130px !important;
+  position: relative;
+  background: #ffffff;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+}
+
+.freeform-element {
+  position: absolute;
+  cursor: move;
+  user-select: none;
+  box-sizing: border-box;
+  transform-origin: center center;
+}
+
+/* Freeform element active selection border */
+.freeform-element--selected {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* Resize handles container */
+.freeform-element__handles {
+  position: absolute;
+  inset: -2px;
+  pointer-events: none;
+  display: none;
+  z-index: 100;
+}
+
+.freeform-element--selected .freeform-element__handles {
+  display: block;
+}
+
+/* Individual handles */
+.freeform-handle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #ffffff;
+  border: 1.5px solid var(--accent);
+  border-radius: 50%;
+  pointer-events: auto;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.freeform-handle--tl { top: -4px; left: -4px; cursor: nwse-resize; }
+.freeform-handle--tm { top: -4px; left: calc(50% - 4px); cursor: ns-resize; }
+.freeform-handle--tr { top: -4px; right: -4px; cursor: nesw-resize; }
+.freeform-handle--ml { top: calc(50% - 4px); left: -4px; cursor: ew-resize; }
+.freeform-handle--mr { top: calc(50% - 4px); right: -4px; cursor: ew-resize; }
+.freeform-handle--bl { bottom: -4px; left: -4px; cursor: nesw-resize; }
+.freeform-handle--bm { bottom: -4px; left: calc(50% - 4px); cursor: ns-resize; }
+.freeform-handle--br { bottom: -4px; right: -4px; cursor: nwse-resize; }
+
+/* Rotation handle (extends from top) */
+.freeform-handle--rotate {
+  top: -24px;
+  left: calc(50% - 4px);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: grab;
+}
+
+.freeform-handle--rotate::before {
+  content: '';
+  position: absolute;
+  bottom: -16px;
+  left: 3px;
+  width: 1px;
+  height: 16px;
+  background: var(--accent);
+  pointer-events: none;
+}
+
+/* Layer item styling in left panel list */
+.layer-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--app-bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s;
+}
+
+.layer-item:hover {
+  background: var(--panel-bg-hover);
+  border-color: var(--accent-muted);
+}
+
+.layer-item--active {
+  background: rgba(201, 169, 110, 0.1);
+  border-color: var(--accent);
+}
+
+.layer-item__name {
+  font-weight: 500;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.layer-item__actions {
+  display: flex;
+  gap: 4px;
+}
+
+/* Snapping alignment line */
+.canvas-snap-line {
+  position: absolute;
+  background: #3b82f6;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.canvas-snap-line--h {
+  height: 1px;
+  left: 0;
+  right: 0;
+}
+
+.canvas-snap-line--v {
+  width: 1px;
+  top: 0;
+  bottom: 0;
+}
+

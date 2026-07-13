@@ -159,6 +159,7 @@ const THEMES = {
 class DesignManager {
   constructor(editorState) {
     this.editorState = editorState;
+    this.deviceMode = 'desktop'; // 'desktop' | 'mobile'
   }
 
   /**
@@ -198,15 +199,21 @@ class DesignManager {
   }
 
   /**
-   * Update custom design property
+   * Update custom design property. Routes to mobile sub-path when in mobile mode and sync is off.
    */
   async updateDesign(path, value) {
     const hotelId = state.get('currentHotelId');
     const menuId = this.editorState.menuId;
+    const design = this.editorState.design || {};
+    const syncMobile = design.syncMobile !== false; // default true
+
+    const effectivePath = (!syncMobile && this.deviceMode === 'mobile')
+      ? `mobile/${path}`
+      : path;
 
     try {
       await db.update(`hotels/${hotelId}/menus/${menuId}/design/custom`, {
-        [path]: value
+        [effectivePath]: value
       });
     } catch (error) {
       toast.error('Failed to update design');
@@ -214,7 +221,28 @@ class DesignManager {
   }
 
   /**
-   * Render design panel (left panel Design tab or right panel when nothing selected)
+   * Get the effective value for a design property, considering device mode.
+   */
+  _val(custom, path, fallback) {
+    const design = this.editorState.design || {};
+    const syncMobile = design.syncMobile !== false;
+
+    if (!syncMobile && this.deviceMode === 'mobile') {
+      const mobile = custom.mobile || {};
+      const parts = path.split('/');
+      let val = mobile;
+      for (const p of parts) { val = val?.[p]; }
+      if (val !== undefined && val !== null) return val;
+    }
+    // Fallback to root custom
+    const parts = path.split('/');
+    let val = custom;
+    for (const p of parts) { val = val?.[p]; }
+    return val !== undefined && val !== null ? val : fallback;
+  }
+
+  /**
+   * Render design panel (left panel Design tab)
    */
   renderDesignPanel(container) {
     const design = this.editorState.design || {};
@@ -222,111 +250,255 @@ class DesignManager {
     const colors = custom.colors || {};
     const fonts = custom.fonts || {};
     const spacing = custom.spacing || {};
+    const border = custom.border || {};
+    const typography = custom.typography || {};
+    const card = custom.card || {};
+    const syncMobile = design.syncMobile !== false;
+    const customCss = custom.css || '';
 
     container.innerHTML = `
+      <!-- Device Mode Toggle -->
+      <div class="prop-section" style="padding-bottom:0;">
+        <div class="prop-section__title" style="margin-bottom:6px;">Device Preview</div>
+        <div style="display:flex;gap:4px;margin-bottom:8px;">
+          <button class="btn btn--xs ${this.deviceMode === 'desktop' ? 'btn--active' : 'btn--ghost'}" id="device-mode-desktop" style="flex:1;padding:6px 0;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            Desktop
+          </button>
+          <button class="btn btn--xs ${this.deviceMode === 'mobile' ? 'btn--active' : 'btn--ghost'}" id="device-mode-mobile" style="flex:1;padding:6px 0;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+            Mobile
+          </button>
+        </div>
+        <div class="prop-row prop-row--inline" style="margin-bottom:0;">
+          <span class="prop-label" style="font-size:11px;">Sync mobile with desktop</span>
+          <label class="toggle"><input type="checkbox" class="toggle__input" id="design-sync-mobile" ${syncMobile ? 'checked' : ''}><span class="toggle__slider"></span></label>
+        </div>
+        ${!syncMobile && this.deviceMode === 'mobile' ? `<div style="margin-top:6px;padding:6px 8px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.25);border-radius:4px;font-size:10px;color:#a78bfa;line-height:1.4;">📱 Editing mobile-only overrides. Changes here won't affect the desktop view.</div>` : ''}
+      </div>
+
       <!-- Theme Selector -->
       <div class="prop-section">
-        <div class="prop-section__title">Theme</div>
-        
-        <!-- Theme Category Filter Tabs -->
-        <div class="theme-filters" style="display:flex;gap:4px;overflow-x:auto;padding-bottom:8px;margin-bottom:8px;scrollbar-width:none;-ms-overflow-style:none;">
-          <button class="btn btn--xs btn--active theme-filter-btn" data-filter="all" style="padding:2px 8px;font-size:10px;white-space:nowrap;">All</button>
-          <button class="btn btn--xs btn--ghost theme-filter-btn" data-filter="dark" style="padding:2px 8px;font-size:10px;white-space:nowrap;">Dark</button>
-          <button class="btn btn--xs btn--ghost theme-filter-btn" data-filter="light" style="padding:2px 8px;font-size:10px;white-space:nowrap;">Light</button>
-          <button class="btn btn--xs btn--ghost theme-filter-btn" data-filter="minimal" style="padding:2px 8px;font-size:10px;white-space:nowrap;">Minimal</button>
-          <button class="btn btn--xs btn--ghost theme-filter-btn" data-filter="bold" style="padding:2px 8px;font-size:10px;white-space:nowrap;">Bold</button>
-          <button class="btn btn--xs btn--ghost theme-filter-btn" data-filter="organic" style="padding:2px 8px;font-size:10px;white-space:nowrap;">Organic</button>
-          <button class="btn btn--xs btn--ghost theme-filter-btn" data-filter="luxury" style="padding:2px 8px;font-size:10px;white-space:nowrap;">Luxury</button>
-          <button class="btn btn--xs btn--ghost theme-filter-btn" data-filter="classic" style="padding:2px 8px;font-size:10px;white-space:nowrap;">📜 Classic</button>
-        </div>
-
-        <!-- Classic Info Box -->
-        <div class="classic-info-box" style="margin-bottom:8px;padding:8px;background:rgba(201,169,110,0.1);border:1px solid rgba(201,169,110,0.3);border-radius:4px;font-size:11px;display:none;line-height:1.4;">
-          <strong style="color:#C9A96E;">Classic Price-List Style</strong><br>
-          Beautiful text-only menus. No food photos needed. Print-perfect. Timeless. Fast to build.
-        </div>
-
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;max-height:300px;overflow-y:auto;padding:2px;">
-          ${Object.entries(THEMES).map(([id, theme]) => `
-            <div class="theme-preview-card ${design.theme === id ? 'theme-preview-card--active' : ''}" data-theme="${id}" data-tags="${(theme.tags || []).join(',')}">
-              <div class="theme-preview-card__swatch">
-                <div class="theme-preview-card__swatch-color" style="background:${theme.colors.primary};"></div>
-                <div class="theme-preview-card__swatch-color" style="background:${theme.colors.secondary};"></div>
-                <div class="theme-preview-card__swatch-color" style="background:${theme.colors.background};"></div>
+        <div class="prop-section__title" style="cursor:pointer;" data-collapse="theme-section">Theme <span style="float:right;font-size:10px;opacity:.5;">▼</span></div>
+        <div id="theme-section">
+          <div class="theme-filters" style="display:flex;gap:4px;overflow-x:auto;padding-bottom:8px;margin-bottom:8px;scrollbar-width:none;-ms-overflow-style:none;">
+            <button class="btn btn--xs btn--active theme-filter-btn" data-filter="all" style="padding:2px 8px;font-size:10px;white-space:nowrap;">All</button>
+            <button class="btn btn--xs btn--ghost theme-filter-btn" data-filter="dark" style="padding:2px 8px;font-size:10px;white-space:nowrap;">Dark</button>
+            <button class="btn btn--xs btn--ghost theme-filter-btn" data-filter="light" style="padding:2px 8px;font-size:10px;white-space:nowrap;">Light</button>
+            <button class="btn btn--xs btn--ghost theme-filter-btn" data-filter="minimal" style="padding:2px 8px;font-size:10px;white-space:nowrap;">Minimal</button>
+            <button class="btn btn--xs btn--ghost theme-filter-btn" data-filter="bold" style="padding:2px 8px;font-size:10px;white-space:nowrap;">Bold</button>
+            <button class="btn btn--xs btn--ghost theme-filter-btn" data-filter="organic" style="padding:2px 8px;font-size:10px;white-space:nowrap;">Organic</button>
+            <button class="btn btn--xs btn--ghost theme-filter-btn" data-filter="luxury" style="padding:2px 8px;font-size:10px;white-space:nowrap;">Luxury</button>
+            <button class="btn btn--xs btn--ghost theme-filter-btn" data-filter="classic" style="padding:2px 8px;font-size:10px;white-space:nowrap;">📜 Classic</button>
+          </div>
+          <div class="classic-info-box" style="margin-bottom:8px;padding:8px;background:rgba(201,169,110,0.1);border:1px solid rgba(201,169,110,0.3);border-radius:4px;font-size:11px;display:none;line-height:1.4;">
+            <strong style="color:#C9A96E;">Classic Price-List Style</strong><br>
+            Beautiful text-only menus. No food photos needed. Print-perfect.
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;max-height:240px;overflow-y:auto;padding:2px;">
+            ${Object.entries(THEMES).map(([id, theme]) => `
+              <div class="theme-preview-card ${design.theme === id ? 'theme-preview-card--active' : ''}" data-theme="${id}" data-tags="${(theme.tags || []).join(',')}">
+                <div class="theme-preview-card__swatch">
+                  <div class="theme-preview-card__swatch-color" style="background:${theme.colors.primary};"></div>
+                  <div class="theme-preview-card__swatch-color" style="background:${theme.colors.secondary};"></div>
+                  <div class="theme-preview-card__swatch-color" style="background:${theme.colors.background};"></div>
+                </div>
+                <div class="theme-preview-card__name">${theme.name}</div>
+                <div class="theme-preview-card__check">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
               </div>
-              <div class="theme-preview-card__name">${theme.name}</div>
-              <div class="theme-preview-card__check">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </div>
-            </div>
-          `).join('')}
+            `).join('')}
+          </div>
         </div>
       </div>
 
       <!-- Colors -->
       <div class="prop-section">
-        <div class="prop-section__title">Colors</div>
-        ${['primary', 'secondary', 'accent', 'background', 'text'].map(colorKey => `
-          <div class="prop-row prop-row--inline">
-            <label class="prop-label" style="text-transform:capitalize;">${colorKey}</label>
-            <div class="input-color">
-              <input type="color" value="${colors[colorKey] || '#000000'}" data-color="${colorKey}">
-              <input type="text" class="input" value="${colors[colorKey] || '#000000'}" data-color-text="${colorKey}" style="width:80px;font-size:11px;">
+        <div class="prop-section__title" style="cursor:pointer;" data-collapse="colors-section">Colors <span style="float:right;font-size:10px;opacity:.5;">▼</span></div>
+        <div id="colors-section">
+          ${['primary', 'secondary', 'accent', 'background', 'text'].map(colorKey => `
+            <div class="prop-row prop-row--inline">
+              <label class="prop-label" style="text-transform:capitalize;">${colorKey}</label>
+              <div class="input-color">
+                <input type="color" value="${this._val(custom, 'colors/' + colorKey, '#000000')}" data-color="${colorKey}">
+                <input type="text" class="input" value="${this._val(custom, 'colors/' + colorKey, '#000000')}" data-color-text="${colorKey}" style="width:80px;font-size:11px;">
+              </div>
             </div>
-          </div>
-        `).join('')}
-        ${colors.text && colors.background ? `
-          <div style="margin-top:8px;padding:8px;background:var(--app-bg-subtle);border-radius:var(--radius-md);font-size:11px;">
-            <span>Contrast: ${contrastRatio(colors.text, colors.background).toFixed(1)}:1</span>
-            <span class="badge ${wcagLevel(contrastRatio(colors.text, colors.background)) === 'Fail' ? 'badge--danger' : 'badge--active'}" style="margin-left:8px;">
-              WCAG ${wcagLevel(contrastRatio(colors.text, colors.background))}
-            </span>
-          </div>
-        ` : ''}
+          `).join('')}
+          ${colors.text && colors.background ? `
+            <div style="margin-top:8px;padding:8px;background:var(--app-bg-subtle);border-radius:var(--radius-md);font-size:11px;">
+              <span>Contrast: ${contrastRatio(colors.text, colors.background).toFixed(1)}:1</span>
+              <span class="badge ${wcagLevel(contrastRatio(colors.text, colors.background)) === 'Fail' ? 'badge--danger' : 'badge--active'}" style="margin-left:8px;">
+                WCAG ${wcagLevel(contrastRatio(colors.text, colors.background))}
+              </span>
+            </div>
+          ` : ''}
+        </div>
       </div>
 
       <!-- Typography -->
       <div class="prop-section">
-        <div class="prop-section__title">Typography</div>
-        <div class="prop-row">
-          <label class="prop-label">Heading Font</label>
-          <select class="input" id="design-heading-font">
-            ${this._fontOptions(fonts.heading || 'Playfair Display')}
-          </select>
+        <div class="prop-section__title" style="cursor:pointer;" data-collapse="typo-section">Typography <span style="float:right;font-size:10px;opacity:.5;">▼</span></div>
+        <div id="typo-section">
+          <div class="prop-row">
+            <label class="prop-label">Heading Font</label>
+            <select class="input" id="design-heading-font">
+              ${this._fontOptions(fonts.heading || 'Playfair Display')}
+            </select>
+          </div>
+          <div class="prop-row">
+            <label class="prop-label">Body Font</label>
+            <select class="input" id="design-body-font">
+              ${this._fontOptions(fonts.body || 'Lato')}
+            </select>
+          </div>
+          <div class="prop-row">
+            <label class="prop-label">Heading Size</label>
+            <div class="input-range">
+              <input type="range" id="design-heading-size" min="14" max="56" value="${this._val(custom, 'typography/headingSize', 28)}">
+              <span class="range-value">${this._val(custom, 'typography/headingSize', 28)}px</span>
+            </div>
+          </div>
+          <div class="prop-row">
+            <label class="prop-label">Body Size</label>
+            <div class="input-range">
+              <input type="range" id="design-body-size" min="10" max="24" value="${this._val(custom, 'typography/bodySize', 14)}">
+              <span class="range-value">${this._val(custom, 'typography/bodySize', 14)}px</span>
+            </div>
+          </div>
+          <div class="prop-row">
+            <label class="prop-label">Heading Weight</label>
+            <select class="input" id="design-heading-weight">
+              ${[300,400,500,600,700,800,900].map(w => `<option value="${w}" ${(this._val(custom, 'typography/headingWeight', 700)) == w ? 'selected' : ''}>${w}</option>`).join('')}
+            </select>
+          </div>
+          <div class="prop-row">
+            <label class="prop-label">Body Weight</label>
+            <select class="input" id="design-body-weight">
+              ${[300,400,500,600,700].map(w => `<option value="${w}" ${(this._val(custom, 'typography/bodyWeight', 400)) == w ? 'selected' : ''}>${w}</option>`).join('')}
+            </select>
+          </div>
+          <div class="prop-row">
+            <label class="prop-label">Line Height</label>
+            <div class="input-range">
+              <input type="range" id="design-line-height" min="1" max="2.4" step="0.1" value="${this._val(custom, 'typography/lineHeight', 1.6)}">
+              <span class="range-value">${this._val(custom, 'typography/lineHeight', 1.6)}</span>
+            </div>
+          </div>
         </div>
-        <div class="prop-row">
-          <label class="prop-label">Body Font</label>
-          <select class="input" id="design-body-font">
-            ${this._fontOptions(fonts.body || 'Lato')}
-          </select>
+      </div>
+
+      <!-- Borders & Page Frame -->
+      <div class="prop-section">
+        <div class="prop-section__title" style="cursor:pointer;" data-collapse="border-section">Borders & Frame <span style="float:right;font-size:10px;opacity:.5;">▼</span></div>
+        <div id="border-section">
+          <div class="prop-row">
+            <label class="prop-label">Border Width</label>
+            <div class="input-range">
+              <input type="range" id="design-border-width" min="0" max="8" value="${this._val(custom, 'border/width', 0)}">
+              <span class="range-value">${this._val(custom, 'border/width', 0)}px</span>
+            </div>
+          </div>
+          <div class="prop-row">
+            <label class="prop-label">Border Style</label>
+            <select class="input" id="design-border-style">
+              ${['none','solid','dashed','dotted','double','groove','ridge'].map(s => `<option value="${s}" ${(this._val(custom, 'border/style', 'none')) === s ? 'selected' : ''}>${s.charAt(0).toUpperCase() + s.slice(1)}</option>`).join('')}
+            </select>
+          </div>
+          <div class="prop-row prop-row--inline">
+            <label class="prop-label">Border Color</label>
+            <div class="input-color">
+              <input type="color" value="${this._val(custom, 'border/color', '#C9A96E')}" id="design-border-color">
+              <input type="text" class="input" value="${this._val(custom, 'border/color', '#C9A96E')}" id="design-border-color-text" style="width:80px;font-size:11px;">
+            </div>
+          </div>
+          <div class="prop-row">
+            <label class="prop-label">Corner Radius</label>
+            <div class="input-range">
+              <input type="range" id="design-border-radius" min="0" max="32" value="${this._val(custom, 'border/radius', 0)}">
+              <span class="range-value">${this._val(custom, 'border/radius', 0)}px</span>
+            </div>
+          </div>
+          <div class="prop-row">
+            <label class="prop-label">Inner Padding</label>
+            <div class="input-range">
+              <input type="range" id="design-border-padding" min="0" max="40" value="${this._val(custom, 'border/padding', 0)}">
+              <span class="range-value">${this._val(custom, 'border/padding', 0)}px</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card & Shadow -->
+      <div class="prop-section">
+        <div class="prop-section__title" style="cursor:pointer;" data-collapse="card-section">Card & Shadows <span style="float:right;font-size:10px;opacity:.5;">▼</span></div>
+        <div id="card-section">
+          <div class="prop-row">
+            <label class="prop-label">Section Card Style</label>
+            <select class="input" id="design-card-style">
+              ${['none','outlined','filled','glass'].map(s => `<option value="${s}" ${(this._val(custom, 'card/style', 'none')) === s ? 'selected' : ''}>${s.charAt(0).toUpperCase() + s.slice(1)}</option>`).join('')}
+            </select>
+          </div>
+          <div class="prop-row">
+            <label class="prop-label">Card Shadow</label>
+            <select class="input" id="design-card-shadow">
+              ${['none','subtle','medium','strong','glow'].map(s => `<option value="${s}" ${(this._val(custom, 'card/shadow', 'none')) === s ? 'selected' : ''}>${s.charAt(0).toUpperCase() + s.slice(1)}</option>`).join('')}
+            </select>
+          </div>
+          <div class="prop-row">
+            <label class="prop-label">Card Padding</label>
+            <div class="input-range">
+              <input type="range" id="design-card-padding" min="0" max="48" value="${this._val(custom, 'card/padding', 0)}">
+              <span class="range-value">${this._val(custom, 'card/padding', 0)}px</span>
+            </div>
+          </div>
+          <div class="prop-row">
+            <label class="prop-label">Card Radius</label>
+            <div class="input-range">
+              <input type="range" id="design-card-radius" min="0" max="24" value="${this._val(custom, 'card/radius', 0)}">
+              <span class="range-value">${this._val(custom, 'card/radius', 0)}px</span>
+            </div>
+          </div>
         </div>
       </div>
 
       <!-- Spacing -->
       <div class="prop-section">
-        <div class="prop-section__title">Spacing</div>
-        <div class="prop-row">
-          <label class="prop-label">Section Gap</label>
-          <div class="input-range">
-            <input type="range" id="design-section-gap" min="8" max="64" value="${spacing.sectionGap || 24}">
-            <span class="range-value">${spacing.sectionGap || 24}px</span>
+        <div class="prop-section__title" style="cursor:pointer;" data-collapse="spacing-section">Spacing <span style="float:right;font-size:10px;opacity:.5;">▼</span></div>
+        <div id="spacing-section">
+          <div class="prop-row">
+            <label class="prop-label">Section Gap</label>
+            <div class="input-range">
+              <input type="range" id="design-section-gap" min="8" max="64" value="${this._val(custom, 'spacing/sectionGap', 24)}">
+              <span class="range-value">${this._val(custom, 'spacing/sectionGap', 24)}px</span>
+            </div>
+          </div>
+          <div class="prop-row">
+            <label class="prop-label">Item Gap</label>
+            <div class="input-range">
+              <input type="range" id="design-item-gap" min="4" max="32" value="${this._val(custom, 'spacing/itemGap', 12)}">
+              <span class="range-value">${this._val(custom, 'spacing/itemGap', 12)}px</span>
+            </div>
+          </div>
+          <div class="prop-row">
+            <label class="prop-label">Page Margins (mm)</label>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+              <input type="number" class="input" id="margin-top" value="${this._val(custom, 'spacing/pageMarginTop', 20)}" placeholder="Top" style="font-size:12px;">
+              <input type="number" class="input" id="margin-right" value="${this._val(custom, 'spacing/pageMarginRight', 15)}" placeholder="Right" style="font-size:12px;">
+              <input type="number" class="input" id="margin-bottom" value="${this._val(custom, 'spacing/pageMarginBottom', 20)}" placeholder="Bottom" style="font-size:12px;">
+              <input type="number" class="input" id="margin-left" value="${this._val(custom, 'spacing/pageMarginLeft', 15)}" placeholder="Left" style="font-size:12px;">
+            </div>
           </div>
         </div>
-        <div class="prop-row">
-          <label class="prop-label">Item Gap</label>
-          <div class="input-range">
-            <input type="range" id="design-item-gap" min="4" max="32" value="${spacing.itemGap || 12}">
-            <span class="range-value">${spacing.itemGap || 12}px</span>
-          </div>
-        </div>
-        <div class="prop-row">
-          <label class="prop-label">Page Margins (mm)</label>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
-            <input type="number" class="input" id="margin-top" value="${spacing.pageMarginTop || 20}" placeholder="Top" style="font-size:12px;">
-            <input type="number" class="input" id="margin-right" value="${spacing.pageMarginRight || 15}" placeholder="Right" style="font-size:12px;">
-            <input type="number" class="input" id="margin-bottom" value="${spacing.pageMarginBottom || 20}" placeholder="Bottom" style="font-size:12px;">
-            <input type="number" class="input" id="margin-left" value="${spacing.pageMarginLeft || 15}" placeholder="Left" style="font-size:12px;">
-          </div>
+      </div>
+
+      <!-- Custom CSS -->
+      <div class="prop-section">
+        <div class="prop-section__title" style="cursor:pointer;" data-collapse="css-section">Custom CSS <span style="float:right;font-size:10px;opacity:.5;">▼</span></div>
+        <div id="css-section">
+          <p style="font-size:10px;color:var(--text-muted);margin-bottom:8px;line-height:1.4;">Write raw CSS rules. They will be injected into the menu preview and guest views. Target classes like <code style="font-size:10px;background:var(--app-bg-subtle);padding:1px 4px;border-radius:3px;">.section-title</code>, <code style="font-size:10px;background:var(--app-bg-subtle);padding:1px 4px;border-radius:3px;">.menu-item</code>, etc.</p>
+          <textarea class="input" id="design-custom-css" rows="8" spellcheck="false" style="font-family:'Courier Prime',monospace;font-size:11px;line-height:1.5;resize:vertical;tab-size:2;white-space:pre;overflow-wrap:normal;overflow-x:auto;">${customCss}</textarea>
         </div>
       </div>
     `;
@@ -338,54 +510,83 @@ class DesignManager {
     const fonts = [
       'Playfair Display', 'Lato', 'Cormorant Garamond', 'Noto Sans JP',
       'Libre Baskerville', 'Source Sans 3', 'Merriweather', 'Inter',
-      'Outfit', 'DM Serif Display', 'Crimson Pro'
+      'Outfit', 'DM Serif Display', 'Crimson Pro', 'Bebas Neue',
+      'Space Grotesk', 'Oswald', 'Barlow', 'Jost', 'DM Sans',
+      'Italiana', 'Amiri', 'Bodoni Moda', 'Cinzel', 'Special Elite',
+      'Courier Prime', 'Great Vibes', 'Josefin Sans', 'Poiret One',
+      'Share Tech Mono', 'Caveat', 'EB Garamond', 'Lora',
+      'Noto Serif JP', 'Shippori Mincho', 'Source Serif 4'
     ];
     return fonts.map(f => `<option value="${f}" ${f === selected ? 'selected' : ''} style="font-family:'${f}'">${f}</option>`).join('');
   }
 
   _bindDesignEvents(container) {
     const debouncedUpdate = debounce((path, value) => this.updateDesign(path, value), 300);
+    const debouncedCssUpdate = debounce((value) => this.updateDesign('css', value), 600);
 
-    // Theme cards
-    // Theme filters
+    // ── Collapsible sections ──
+    container.querySelectorAll('[data-collapse]').forEach(title => {
+      title.addEventListener('click', () => {
+        const target = container.querySelector(`#${title.dataset.collapse}`);
+        if (target) {
+          const isHidden = target.style.display === 'none';
+          target.style.display = isHidden ? '' : 'none';
+          const arrow = title.querySelector('span');
+          if (arrow) arrow.textContent = isHidden ? '▼' : '▶';
+        }
+      });
+    });
+
+    // ── Device Mode ──
+    container.querySelector('#device-mode-desktop')?.addEventListener('click', () => {
+      this.deviceMode = 'desktop';
+      this.renderDesignPanel(container);
+      document.dispatchEvent(new CustomEvent('designDeviceModeChange', { detail: 'desktop' }));
+    });
+    container.querySelector('#device-mode-mobile')?.addEventListener('click', () => {
+      this.deviceMode = 'mobile';
+      this.renderDesignPanel(container);
+      document.dispatchEvent(new CustomEvent('designDeviceModeChange', { detail: 'mobile' }));
+    });
+
+    // ── Sync Mobile Toggle ──
+    container.querySelector('#design-sync-mobile')?.addEventListener('change', async (e) => {
+      const hotelId = state.get('currentHotelId');
+      const menuId = this.editorState.menuId;
+      try {
+        await db.update(`hotels/${hotelId}/menus/${menuId}/design`, {
+          syncMobile: e.target.checked
+        });
+      } catch (err) {
+        toast.error('Failed to save sync setting');
+      }
+      this.renderDesignPanel(container);
+    });
+
+    // ── Theme filters ──
     const filterBtns = container.querySelectorAll('.theme-filter-btn');
     const themeCards = container.querySelectorAll('.theme-preview-card');
     const classicInfoBox = container.querySelector('.classic-info-box');
 
     filterBtns.forEach(btn => {
       btn.addEventListener('click', () => {
-        filterBtns.forEach(b => {
-          b.classList.remove('btn--active');
-          b.classList.add('btn--ghost');
-        });
-        btn.classList.add('btn--active');
-        btn.classList.remove('btn--ghost');
-
+        filterBtns.forEach(b => { b.classList.remove('btn--active'); b.classList.add('btn--ghost'); });
+        btn.classList.add('btn--active'); btn.classList.remove('btn--ghost');
         const filter = btn.dataset.filter;
-        
-        if (classicInfoBox) {
-          classicInfoBox.style.display = filter === 'classic' ? 'block' : 'none';
-        }
-
+        if (classicInfoBox) classicInfoBox.style.display = filter === 'classic' ? 'block' : 'none';
         themeCards.forEach(card => {
           const tags = card.dataset.tags ? card.dataset.tags.split(',') : [];
-          if (filter === 'all' || tags.includes(filter)) {
-            card.style.display = 'block';
-          } else {
-            card.style.display = 'none';
-          }
+          card.style.display = (filter === 'all' || tags.includes(filter)) ? 'block' : 'none';
         });
       });
     });
 
-    // Theme cards
+    // ── Theme cards ──
     themeCards.forEach(card => {
-      card.addEventListener('click', () => {
-        this.setTheme(card.dataset.theme);
-      });
+      card.addEventListener('click', () => this.setTheme(card.dataset.theme));
     });
 
-    // Color pickers
+    // ── Color pickers ──
     container.querySelectorAll('input[type="color"][data-color]').forEach(picker => {
       picker.addEventListener('input', (e) => {
         const key = e.target.dataset.color;
@@ -394,8 +595,6 @@ class DesignManager {
         debouncedUpdate(`colors/${key}`, e.target.value);
       });
     });
-
-    // Color text inputs
     container.querySelectorAll('input[data-color-text]').forEach(input => {
       input.addEventListener('change', (e) => {
         const key = e.target.dataset.colorText;
@@ -407,7 +606,7 @@ class DesignManager {
       });
     });
 
-    // Font selects
+    // ── Font selects ──
     container.querySelector('#design-heading-font')?.addEventListener('change', (e) => {
       this.updateDesign('fonts/heading', e.target.value);
     });
@@ -415,18 +614,53 @@ class DesignManager {
       this.updateDesign('fonts/body', e.target.value);
     });
 
-    // Spacing sliders
-    const sectionGap = container.querySelector('#design-section-gap');
-    sectionGap?.addEventListener('input', (e) => {
-      e.target.nextElementSibling.textContent = e.target.value + 'px';
-      debouncedUpdate('spacing/sectionGap', parseInt(e.target.value));
+    // ── Typography sliders ──
+    this._bindRangeSlider(container, '#design-heading-size', 'typography/headingSize', debouncedUpdate, 'px');
+    this._bindRangeSlider(container, '#design-body-size', 'typography/bodySize', debouncedUpdate, 'px');
+    this._bindRangeSlider(container, '#design-line-height', 'typography/lineHeight', debouncedUpdate, '', true);
+
+    container.querySelector('#design-heading-weight')?.addEventListener('change', (e) => {
+      this.updateDesign('typography/headingWeight', parseInt(e.target.value));
+    });
+    container.querySelector('#design-body-weight')?.addEventListener('change', (e) => {
+      this.updateDesign('typography/bodyWeight', parseInt(e.target.value));
     });
 
-    const itemGap = container.querySelector('#design-item-gap');
-    itemGap?.addEventListener('input', (e) => {
-      e.target.nextElementSibling.textContent = e.target.value + 'px';
-      debouncedUpdate('spacing/itemGap', parseInt(e.target.value));
+    // ── Border controls ──
+    this._bindRangeSlider(container, '#design-border-width', 'border/width', debouncedUpdate, 'px');
+    this._bindRangeSlider(container, '#design-border-radius', 'border/radius', debouncedUpdate, 'px');
+    this._bindRangeSlider(container, '#design-border-padding', 'border/padding', debouncedUpdate, 'px');
+
+    container.querySelector('#design-border-style')?.addEventListener('change', (e) => {
+      this.updateDesign('border/style', e.target.value);
     });
+
+    const borderColor = container.querySelector('#design-border-color');
+    const borderColorText = container.querySelector('#design-border-color-text');
+    borderColor?.addEventListener('input', (e) => {
+      if (borderColorText) borderColorText.value = e.target.value;
+      debouncedUpdate('border/color', e.target.value);
+    });
+    borderColorText?.addEventListener('change', (e) => {
+      if (borderColor && /^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
+        borderColor.value = e.target.value;
+        debouncedUpdate('border/color', e.target.value);
+      }
+    });
+
+    // ── Card & Shadow ──
+    container.querySelector('#design-card-style')?.addEventListener('change', (e) => {
+      this.updateDesign('card/style', e.target.value);
+    });
+    container.querySelector('#design-card-shadow')?.addEventListener('change', (e) => {
+      this.updateDesign('card/shadow', e.target.value);
+    });
+    this._bindRangeSlider(container, '#design-card-padding', 'card/padding', debouncedUpdate, 'px');
+    this._bindRangeSlider(container, '#design-card-radius', 'card/radius', debouncedUpdate, 'px');
+
+    // ── Spacing sliders ──
+    this._bindRangeSlider(container, '#design-section-gap', 'spacing/sectionGap', debouncedUpdate, 'px');
+    this._bindRangeSlider(container, '#design-item-gap', 'spacing/itemGap', debouncedUpdate, 'px');
 
     // Margins
     ['top', 'right', 'bottom', 'left'].forEach(side => {
@@ -434,6 +668,35 @@ class DesignManager {
       input?.addEventListener('change', () => {
         debouncedUpdate(`spacing/pageMargin${side.charAt(0).toUpperCase() + side.slice(1)}`, parseInt(input.value) || 0);
       });
+    });
+
+    // ── Custom CSS ──
+    container.querySelector('#design-custom-css')?.addEventListener('input', (e) => {
+      debouncedCssUpdate(e.target.value);
+    });
+    // Allow Tab key inside textarea
+    container.querySelector('#design-custom-css')?.addEventListener('keydown', (e) => {
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        const ta = e.target;
+        const start = ta.selectionStart;
+        const end = ta.selectionEnd;
+        ta.value = ta.value.substring(0, start) + '  ' + ta.value.substring(end);
+        ta.selectionStart = ta.selectionEnd = start + 2;
+      }
+    });
+  }
+
+  /**
+   * Helper to bind a range slider to a design property with live label update
+   */
+  _bindRangeSlider(container, selector, path, debouncedUpdate, unit = '', isFloat = false) {
+    const el = container.querySelector(selector);
+    if (!el) return;
+    el.addEventListener('input', (e) => {
+      const val = isFloat ? parseFloat(e.target.value) : parseInt(e.target.value);
+      e.target.nextElementSibling.textContent = val + unit;
+      debouncedUpdate(path, val);
     });
   }
 }

@@ -385,16 +385,36 @@
     // Helper to get hotel slug from subdomain
     function getHotelSlugFromHostname() {
       const hostname = window.location.hostname;
-      const baseDomain = 'menuforgee.vercel.app';
-      if (hostname.endsWith('.' + baseDomain)) {
-        return hostname.substring(0, hostname.length - baseDomain.length - 1);
+      
+      // Ignore localhost and raw IP addresses
+      if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        return null;
       }
-      if (hostname.includes('.localhost') || hostname.startsWith('127.0.0.1')) {
+      
+      // For localhost subdomains (e.g. hotel.localhost)
+      if (hostname.includes('.localhost')) {
         const parts = hostname.split('.');
-        if (parts.length > 1 && parts[0] !== 'www' && parts[0] !== 'localhost') {
+        if (parts.length > 1 && parts[0] !== 'www') {
           return parts[0];
         }
+        return null;
       }
+      
+      const parts = hostname.split('.');
+      
+      // If it ends with .vercel.app (e.g. hotel.menuforgee.vercel.app)
+      if (hostname.endsWith('.vercel.app')) {
+        if (parts.length >= 4 && parts[0] !== 'www') {
+          return parts[0];
+        }
+        return null;
+      }
+      
+      // For custom domains (e.g. hotel.menuforgee.com)
+      if (parts.length >= 3 && parts[0] !== 'www') {
+        return parts[0];
+      }
+      
       return null;
     }
 
